@@ -1,18 +1,12 @@
-from app.forms.extensions import db
-
-class User(db.Model):
-    __tablename__ = "users"
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    email = db.Column(db.String(255), unique=True, nullable=False, index=True)
-    
+from app.extensions import db
 
 class Prospect(db.Model):
     __tablename__ = "prospects"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    scraping_job_id = db.Column(db.Integer, db.ForeignKey("scraping_jobs.id"), nullable=True)
+
     company_name = db.Column(db.String(255), nullable=False)
     facebook_url = db.Column(db.String(500), nullable=True)
     whatsapp_number = db.Column(db.String(50), nullable=True)
@@ -29,7 +23,5 @@ class Prospect(db.Model):
         db.UniqueConstraint("user_id", "whatsapp_number", name="uq_user_whatsapp"),
     )
 
-
-
-
-
+    def has_valid_contact(self):
+        return bool(self.email or self.whatsapp_number)
