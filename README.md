@@ -6,7 +6,7 @@ diffusion multi-canal (Email/WhatsApp).
 
 ## Architecture
 
-Voir `docs/architecture_phase3.md` pour le détail de l'architecture
+Voir `docs/architecture_projet.md` pour le détail de l'architecture
 (Clean Architecture / SOLID) et du modèle de données.
 
 ## Installation
