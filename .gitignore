@@ -1,7 +1,24 @@
-.venv/
+# Environnement virtuel
 venv/
+.venv/
+env/
+
+# Cache Python
 __pycache__/
 *.pyc
+*.pyo
+
+# Variables d'environnement (clés API, secrets)
 .env
-instance/
+
+# Base de données locale
 *.db
+instance/
+
+# Éditeurs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

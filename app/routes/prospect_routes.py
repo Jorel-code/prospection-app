@@ -12,7 +12,7 @@ def create_prospect():
     service = get_prospect_service()
     try:
         prospect = service.create(
-            user_id=2,  # à remplacer par l'utilisateur authentifié
+            user_id=1,  # à remplacer par l'utilisateur authentifié
             company_name=data.get("company_name"),
             email=data.get("email"),
             whatsapp_number=data.get("whatsapp_number"),
