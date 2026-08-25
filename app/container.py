@@ -5,11 +5,21 @@ from app.repositories.sqlalchemy_product_repository import SQLAlchemyProductRepo
 from app.services.product_service import ProductService
 from app.integrations.scrapers.playwright_scraper import PlaywrightScraper
 from app.services.scraping_service import ScrapingService
+from app.integrations.ai_providers.groq_provider import GroqProvider
+from app.integrations.ai_providers.gemini_provider import GeminiProvider
+from app.integrations.ai_providers.fallback_ai_client import FallbackAIClient
+from app.services.ai_generation_service import AIGenerationService
+from app.integrations.channels.email_sender import EmailSender
+from app.services.campaign_service import CampaignService
+from app.services.rate_limiter import RateLimiter
 
 prospect_repository = SQLAlchemyProspectRepository()
 contact_validator = ContactValidator()
 product_repository = SQLAlchemyProductRepository()
 scraper_engine = PlaywrightScraper()
+ai_provider = FallbackAIClient(providers=[GroqProvider(), GeminiProvider()])
+channel_sender = EmailSender()
+rate_limiter = RateLimiter(max_appels=10, periode_secondes=60)
 
 def get_prospect_service():
     return ProspectService(
@@ -25,4 +35,19 @@ def get_scraping_service():
         scraper_engine=scraper_engine,
         contact_validator=contact_validator,
         prospect_repository=prospect_repository
+    )
+
+def get_ai_generation_service():
+    return AIGenerationService(
+        ai_provider=ai_provider,
+        prospect_repository=prospect_repository,  # déjà défini
+        product_repository=product_repository      # déjà défini
+    )
+
+def get_campaign_service():
+    return CampaignService(
+        channel_sender=channel_sender,
+        ai_generation_service=get_ai_generation_service(),
+        prospect_repository=prospect_repository,
+        rate_limiter=rate_limiter
     )
