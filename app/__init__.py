@@ -8,8 +8,6 @@ def create_app():
 
     db.init_app(app)
 
-    # Import des modèles AVANT db.create_all(), sinon SQLAlchemy
-    # ne connaît pas leurs tables et ne les crée pas.
     from app.models.user import User
     from app.models.prospect import Prospect
     from app.models.product import Product
@@ -17,7 +15,7 @@ def create_app():
     from app.models.campaign import Campaign
     from app.models.campaign_message import CampaignMessage
 
-    with app.app_context():
-        db.create_all()
+    from app.routes.prospect_routes import prospect_bp
+    app.register_blueprint(prospect_bp)
 
     return app
