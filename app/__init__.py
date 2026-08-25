@@ -16,6 +16,8 @@ def create_app():
     from app.models.campaign_message import CampaignMessage
 
     from app.routes.prospect_routes import prospect_bp
-    app.register_blueprint(prospect_bp)
+    from app.routes.product_routes import product_bp
 
+    app.register_blueprint(prospect_bp)
+    app.register_blueprint(product_bp)
     return app
