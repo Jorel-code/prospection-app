@@ -17,7 +17,10 @@ def create_app():
 
     from app.routes.prospect_routes import prospect_bp
     from app.routes.product_routes import product_bp
+    from app.routes.scraping_routes import scraping_bp
 
     app.register_blueprint(prospect_bp)
     app.register_blueprint(product_bp)
+    app.register_blueprint(scraping_bp)
+    
     return app
