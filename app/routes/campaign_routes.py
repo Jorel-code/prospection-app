@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from app.container import get_ai_generation_service
 from app.container import get_campaign_service
+from app.models.campaign_message import CampaignMessage
+from app.extensions import db
 
 campaign_bp = Blueprint("campaign_bp", __name__)
 
@@ -33,3 +35,42 @@ def launch_campaign():
         channel=data.get("channel"), name=data.get("name", "Campagne sans nom")
     )
     return jsonify(resultat), 200
+
+@campaign_bp.route("/campaigns/<int:campaign_id>/stats", methods=["GET"])
+def campaign_stats(campaign_id):
+    messages = CampaignMessage.query.filter_by(campaign_id=campaign_id).all()
+
+    stats = {
+        "total": len(messages),
+        "envoyes": sum(1 for m in messages if m.status == "sent"),
+        "echecs": sum(1 for m in messages if m.status == "failed"),
+        "en_attente": sum(1 for m in messages if m.status in ("pending", "queued")),
+    }
+    stats["taux_reussite"] = (
+        round(stats["envoyes"] / stats["total"] * 100, 1) if stats["total"] > 0 else 0
+    )
+    return jsonify(stats), 200
+
+@campaign_bp.route("/dashboard/global", methods=["GET"])
+def dashboard_global():
+    from app.models.prospect import Prospect
+
+    total_prospects = Prospect.query.count()
+    total_envois = CampaignMessage.query.count()
+    total_reussis = CampaignMessage.query.filter_by(status="sent").count()
+
+    par_source = db.session.query(
+        Prospect.source, db.func.count(Prospect.id)
+    ).group_by(Prospect.source).all()
+
+    par_statut_prospect = db.session.query(
+        Prospect.status, db.func.count(Prospect.id)
+    ).group_by(Prospect.status).all()
+
+    return jsonify({
+        "total_prospects": total_prospects,
+        "total_envois": total_envois,
+        "total_reussis": total_reussis,
+        "repartition_par_source": dict(par_source),
+        "repartition_par_statut": dict(par_statut_prospect)
+    }), 200
