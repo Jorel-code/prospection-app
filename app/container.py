@@ -12,6 +12,7 @@ from app.services.ai_generation_service import AIGenerationService
 from app.integrations.channels.email_sender import EmailSender
 from app.services.campaign_service import CampaignService
 from app.services.rate_limiter import RateLimiter
+from app.services.auth_service import AuthService
 
 prospect_repository = SQLAlchemyProspectRepository()
 contact_validator = ContactValidator()
@@ -51,3 +52,6 @@ def get_campaign_service():
         prospect_repository=prospect_repository,
         rate_limiter=rate_limiter
     )
+
+def get_auth_service():
+    return AuthService()
