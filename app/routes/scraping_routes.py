@@ -1,11 +1,14 @@
 import threading
 from flask import Blueprint, request, jsonify, current_app
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.container import get_scraping_service
 
 scraping_bp = Blueprint("scraping_bp", __name__)
 
 @scraping_bp.route("/scraping/launch", methods=["POST"])
+@jwt_required()
 def launch_scraping():
+    user_id = int(get_jwt_identity())
     data = request.get_json(silent=True) or {}
     app_ctx = current_app._get_current_object()
 
@@ -13,7 +16,7 @@ def launch_scraping():
         with app_ctx.app_context():
             service = get_scraping_service()
             service.launch(
-                user_id=1, sector=data.get("sector"),
+                user_id=user_id, sector=data.get("sector"),
                 location=data.get("location"), keywords=data.get("keywords")
             )
 
@@ -23,6 +26,7 @@ def launch_scraping():
     return jsonify({"message": "Scraping lancé en arrière-plan, consultez /scraping-jobs/<id> pour le suivi"}), 202
 
 @scraping_bp.route("/scraping-jobs/<int:job_id>", methods=["GET"])
+@jwt_required()
 def get_job_status(job_id):
     from app.models.scraping_job import ScrapingJob
     job = ScrapingJob.query.get(job_id)
