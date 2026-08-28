@@ -42,6 +42,15 @@ def launch_campaign():
 @campaign_bp.route("/campaigns/<int:campaign_id>/stats", methods=["GET"])
 @jwt_required()
 def campaign_stats(campaign_id):
+    """Statistiques d'envoi d'une campagne"""
+    from app.models.campaign import Campaign
+
+    user_id = int(get_jwt_identity())
+    campaign = Campaign.query.get(campaign_id)
+
+    if not campaign or campaign.user_id != user_id:
+        return jsonify({"error": "Campagne introuvable"}), 404
+
     messages = CampaignMessage.query.filter_by(campaign_id=campaign_id).all()
     stats = {
         "total": len(messages),
@@ -55,14 +64,26 @@ def campaign_stats(campaign_id):
 @campaign_bp.route("/dashboard/global", methods=["GET"])
 @jwt_required()
 def dashboard_global():
+    """Vue globale : répartition des prospects par source et statut, pour l'utilisateur connecté uniquement"""
     from app.models.prospect import Prospect
+    from app.models.campaign import Campaign
 
-    total_prospects = Prospect.query.count()
-    total_envois = CampaignMessage.query.count()
-    total_reussis = CampaignMessage.query.filter_by(status="sent").count()
+    user_id = int(get_jwt_identity())
 
-    par_source = db.session.query(Prospect.source, db.func.count(Prospect.id)).group_by(Prospect.source).all()
-    par_statut_prospect = db.session.query(Prospect.status, db.func.count(Prospect.id)).group_by(Prospect.status).all()
+    total_prospects = Prospect.query.filter_by(user_id=user_id).count()
+
+    total_envois = db.session.query(CampaignMessage).join(Campaign).filter(Campaign.user_id == user_id).count()
+    total_reussis = db.session.query(CampaignMessage).join(Campaign).filter(
+        Campaign.user_id == user_id, CampaignMessage.status == "sent"
+    ).count()
+
+    par_source = db.session.query(
+        Prospect.source, db.func.count(Prospect.id)
+    ).filter(Prospect.user_id == user_id).group_by(Prospect.source).all()
+
+    par_statut_prospect = db.session.query(
+        Prospect.status, db.func.count(Prospect.id)
+    ).filter(Prospect.user_id == user_id).group_by(Prospect.status).all()
 
     return jsonify({
         "total_prospects": total_prospects,

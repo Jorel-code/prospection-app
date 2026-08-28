@@ -2,6 +2,7 @@ import threading
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.container import get_scraping_service
+from app.models.scraping_job import ScrapingJob
 
 scraping_bp = Blueprint("scraping_bp", __name__)
 
@@ -28,7 +29,6 @@ def launch_scraping():
 @scraping_bp.route("/scraping-jobs/<int:job_id>", methods=["GET"])
 @jwt_required()
 def get_job_status(job_id):
-    from app.models.scraping_job import ScrapingJob
     job = ScrapingJob.query.get(job_id)
     if not job:
         return jsonify({"error": "Job introuvable"}), 404

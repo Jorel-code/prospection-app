@@ -1,5 +1,7 @@
 from datetime import datetime
 from app.extensions import db
+from app.models.scraping_job import ScrapingJob
+from app.models.prospect import Prospect
 
 class ScrapingService:
     def __init__(self, scraper_engine, contact_validator, prospect_repository):
@@ -8,9 +10,6 @@ class ScrapingService:
         self.prospect_repository = prospect_repository  # IProspectRepository
 
     def launch(self, user_id, sector, location, keywords=None):
-        from app.models.scraping_job import ScrapingJob
-        from app.models.prospect import Prospect
-
         job = ScrapingJob(
             user_id=user_id, sector=sector, location=location,
             keywords=keywords, engine_used=type(self.scraper_engine).__name__,

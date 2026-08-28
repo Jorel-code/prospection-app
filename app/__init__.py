@@ -1,6 +1,8 @@
 from flask import Flask
+from flask_talisman import Talisman
+from flask_cors import CORS
 from app.config import Config
-from app.extensions import db, jwt
+from app.extensions import db, jwt, limiter
 
 def create_app():
     app = Flask(__name__)
@@ -8,6 +10,14 @@ def create_app():
 
     db.init_app(app)
     jwt.init_app(app)
+    limiter.init_app(app)
+
+    # En-têtes de sécurité automatiques (CSP, HSTS, X-Frame-Options...)
+    # force_https=False pour le développement local ; passe à True en production
+    Talisman(app, force_https=False)
+
+    # CORS restreint : remplace par l'URL réelle de ton frontend le moment venu
+    CORS(app, origins=["http://localhost:3000"])
 
     from app.models.user import User
     from app.models.prospect import Prospect
