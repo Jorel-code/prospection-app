@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html class="h-full bg-background" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connexion - Prospection App</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config" src="{{ url_for('static', filename='js/tailwind-config.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}"/>
+</head>
+<body class="h-full flex items-center justify-center font-body-md text-on-surface bg-background antialiased">
+<div class="blob-container blob-theme-blue" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<div class="page-enter relative z-10 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg p-8 w-full max-w-sm">
+    <div class="flex items-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-display-lg text-display-lg">P</div>
+        <div>
+            <h1 class="font-headline-sm text-headline-sm font-bold text-primary tracking-tight">Prospection App</h1>
+            <p class="font-body-sm text-body-sm text-secondary">Sales Intelligence</p>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="mb-4 p-3 rounded-lg bg-error-container/50 text-error border border-error/20 font-body-sm text-body-sm">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="space-y-4">
+        <div>
+            <label class="block font-label-bold text-label-bold text-on-surface-variant mb-1 uppercase">Email</label>
+            <input required autofocus class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="email" type="email"/>
+        </div>
+        <div>
+            <label class="block font-label-bold text-label-bold text-on-surface-variant mb-1 uppercase">Mot de passe</label>
+            <input required class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="password" type="password"/>
+        </div>
+        <button type="submit" class="w-full bg-primary-container hover:bg-primary text-on-primary-container hover:text-on-primary font-label-bold text-label-bold py-2.5 rounded-lg transition-colors">Se connecter</button>
+    </form>
+</div>
+</body>
+</html>

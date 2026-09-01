@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Intégrations - Prospection App{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8">
+    <div class="mb-8">
+        <h1 class="font-headline-md text-headline-md font-bold text-on-surface">Intégrations &amp; paramètres</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-2">Statut de vos connecteurs API et canaux de communication.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Fournisseurs IA -->
+        <section class="reveal-on-scroll lg:col-span-2 bg-white border border-outline-variant rounded p-6 shadow-sm">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary">psychology</span>
+                <h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Fournisseurs IA</h2>
+            </div>
+            <div class="space-y-4">
+                {% for nom, configure in integrations.ia.items() %}
+                <div class="flex items-center justify-between p-3 border border-outline-variant rounded">
+                    <span class="font-mono-data font-semibold text-on-surface">{{ nom }}</span>
+                    {% if configure %}
+                    <span class="bg-tertiary-container/20 text-tertiary text-xs px-2 py-0.5 rounded uppercase font-label-bold">Configuré</span>
+                    {% else %}
+                    <span class="bg-error-container/50 text-error text-xs px-2 py-0.5 rounded uppercase font-label-bold">Non configuré</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <p class="text-secondary text-body-sm mt-4">Les clés API se configurent dans le fichier <code class="bg-surface-container px-1 rounded">.env</code> du serveur, jamais depuis cette interface, pour des raisons de sécurité.</p>
+        </section>
+
+        <!-- Rate limiting -->
+        <section class="reveal-on-scroll bg-white border border-outline-variant rounded p-6 shadow-sm flex flex-col">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary">speed</span>
+                <h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Rate limiting</h2>
+            </div>
+            <div class="flex-1 space-y-4">
+                <div class="p-4 bg-surface-container-low rounded border border-outline-variant">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono-data text-on-surface text-sm">Global</span>
+                        <span class="font-label-bold text-primary">200 / jour</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-surface-container-low rounded border border-outline-variant">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono-data text-on-surface text-sm">Génération IA</span>
+                        <span class="font-label-bold text-primary">10 / minute</span>
+                    </div>
+                </div>
+                <div class="p-4 bg-surface-container-low rounded border border-outline-variant">
+                    <div class="flex justify-between items-center">
+                        <span class="font-mono-data text-on-surface text-sm">Lancement campagne</span>
+                        <span class="font-label-bold text-primary">5 / minute</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Canaux de communication -->
+        <section class="reveal-on-scroll lg:col-span-3 bg-white border border-outline-variant rounded p-6 shadow-sm">
+            <div class="flex items-center gap-2 mb-6">
+                <span class="material-symbols-outlined text-primary">forum</span>
+                <h2 class="font-headline-sm text-headline-sm font-semibold text-on-surface">Canaux de communication</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-outline-variant rounded p-4 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">mail</span>
+                                <span class="font-mono-data font-semibold">Email SMTP</span>
+                            </div>
+                            {% if integrations.email %}
+                            <span class="bg-tertiary-container/20 text-tertiary text-xs px-2 py-0.5 rounded uppercase font-label-bold">Connecté</span>
+                            {% else %}
+                            <span class="bg-error-container/50 text-error text-xs px-2 py-0.5 rounded uppercase font-label-bold">Non configuré</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm text-on-surface-variant mb-4">Utilisé pour les séquences de campagne sortantes.</p>
+                    </div>
+                </div>
+                <div class="border border-outline-variant rounded p-4 flex flex-col justify-between bg-surface-container-low">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-secondary">chat</span>
+                                <span class="font-mono-data font-semibold">WhatsApp Business</span>
+                            </div>
+                            {% if integrations.whatsapp %}
+                            <span class="bg-tertiary-container/20 text-tertiary text-xs px-2 py-0.5 rounded uppercase font-label-bold">Connecté</span>
+                            {% else %}
+                            <span class="bg-error-container/50 text-error text-xs px-2 py-0.5 rounded uppercase font-label-bold">Non configuré</span>
+                            {% endif %}
+                        </div>
+                        <p class="text-sm text-on-surface-variant mb-4">Nécessite un compte Meta Business Manager pour être activé.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

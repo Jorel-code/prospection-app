@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Prospection App{% endblock %}
+
+{% block content %}
+<div class="mb-stack-md flex items-end justify-between">
+    <div>
+        <h1 class="font-headline-md text-headline-md text-on-surface mb-1">Vue d'ensemble</h1>
+        <p class="text-secondary font-body-sm text-body-sm">Performance des 7 derniers jours.</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="{{ url_for('web.dashboard_page') }}" class="px-3 py-1.5 bg-primary-container text-white rounded font-mono-data text-mono-data hover:bg-surface-tint transition-colors">Rafraîchir</a>
+    </div>
+</div>
+
+<!-- Bento Grid KPIs -->
+<div class="grid grid-cols-12 gap-gutter">
+    <div class="stagger-item col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="absolute top-0 right-0 w-24 h-24 bg-surface-container rounded-bl-full -mr-8 -mt-8 opacity-50"></div>
+        <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">chat_bubble_outline</span> Taux de réussite
+        </div>
+        <div class="font-display-lg text-display-lg text-on-surface" data-counter-value="{{ stats.taux_reussite }}" data-counter-suffix="%">0%</div>
+        <div class="mt-2 text-tertiary-container font-body-sm text-body-sm flex items-center gap-1 bg-tertiary-container/10 w-fit px-2 py-0.5 rounded">
+            <span class="material-symbols-outlined text-[14px]">arrow_upward</span> Sur {{ stats.total_envois }} envoi(s)
+        </div>
+    </div>
+
+    <div class="stagger-item col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">send</span> Messages envoyés
+        </div>
+        <div class="font-display-lg text-display-lg text-on-surface" data-counter-value="{{ stats.total_envois }}" data-counter-thousands="true">0</div>
+        <div class="mt-2 text-secondary font-body-sm text-body-sm flex items-center gap-1">
+            Sur {{ stats.nb_campagnes }} campagne(s)
+        </div>
+    </div>
+
+    <div class="stagger-item col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">group</span> Prospects
+        </div>
+        <div class="font-display-lg text-display-lg text-on-surface" data-counter-value="{{ stats.total_prospects }}" data-counter-thousands="true">0</div>
+        <div class="mt-2 text-tertiary-container font-body-sm text-body-sm flex items-center gap-1 bg-tertiary-container/10 w-fit px-2 py-0.5 rounded">
+            <span class="material-symbols-outlined text-[14px]">trending_up</span> {{ stats.repartition_par_statut.get('verified', 0) }} vérifiés
+        </div>
+    </div>
+
+    <div class="stagger-item col-span-12 sm:col-span-6 lg:col-span-3 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 relative overflow-hidden group hover:border-primary/50 transition-colors">
+        <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px]">smart_toy</span> Bots actifs
+        </div>
+        <div class="font-display-lg text-display-lg text-on-surface" data-counter-value="{{ stats.bots_actifs }}">0</div>
+        <div class="mt-2 text-primary font-body-sm text-body-sm flex items-center gap-1">
+            {{ stats.bots_total }} job(s) de scraping au total
+        </div>
+    </div>
+
+    <!-- Répartition par source -->
+    <div class="reveal-on-scroll col-span-12 lg:col-span-8 bg-surface-container-lowest border border-outline-variant rounded-lg p-6 flex flex-col min-h-[400px]">
+        <div class="flex justify-between items-center mb-6">
+            <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider">Répartition des prospects par source</div>
+        </div>
+        <div class="flex-1 relative border-l border-b border-outline-variant/50 pt-4 pr-2 pb-6 pl-4 flex items-end gap-2 sm:gap-4">
+            <div class="absolute left-[-30px] top-0 bottom-6 flex flex-col justify-between text-label-bold text-outline text-[10px]">
+                <span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span>
+            </div>
+            {% for source, count in stats.repartition_par_source.items() %}
+            <div class="relative w-full h-[{{ (count / stats.max_source_count * 100) if stats.max_source_count else 0 }}%] bg-surface-container rounded-t group">
+                <div class="absolute bottom-0 w-full bg-primary-container h-full rounded-t opacity-80 group-hover:opacity-100 transition-opacity"></div>
+                <span class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] text-secondary whitespace-nowrap">{{ source }} ({{ count }})</span>
+            </div>
+            {% else %}
+            <p class="text-secondary text-body-sm">Aucun prospect pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Activités récentes -->
+    <div class="reveal-on-scroll col-span-12 lg:col-span-4 bg-surface-container-lowest border border-outline-variant rounded-lg flex flex-col h-full max-h-[400px]">
+        <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright/50">
+            <div class="font-label-bold text-label-bold text-secondary uppercase tracking-wider">Activités récentes</div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-2">
+            <ul class="space-y-1">
+                {% for activite in activites_recentes %}
+                <li class="flex items-start gap-3 p-3 hover:bg-surface-container-low rounded-lg transition-colors group">
+                    <div class="mt-1 w-2 h-2 rounded-full bg-{{ activite.couleur }} ring-4 ring-{{ activite.couleur }}/20"></div>
+                    <div>
+                        <div class="font-mono-data text-mono-data text-on-surface">{{ activite.titre }}</div>
+                        <div class="text-secondary font-body-sm text-body-sm mt-0.5">{{ activite.description }}</div>
+                        <div class="text-outline text-[11px] mt-1">{{ activite.temps }}</div>
+                    </div>
+                </li>
+                {% else %}
+                <li class="p-3 text-secondary font-body-sm text-body-sm">Aucune activité récente.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

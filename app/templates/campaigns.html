@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Campagnes IA - Prospection App{% endblock %}
+
+{% block content %}
+<div class="mb-stack-lg flex justify-between items-end">
+    <div>
+        <h2 class="font-headline-md text-headline-md text-on-surface mb-unit">Générateur de campagnes</h2>
+        <p class="font-body-md text-body-md text-secondary">Configurer une séquence d'approche personnalisée par IA.</p>
+    </div>
+</div>
+
+{% if message %}
+<div class="mb-stack-md p-3 rounded-lg bg-tertiary-container/10 text-tertiary border border-tertiary/20 font-body-sm text-body-sm">{{ message }}</div>
+{% endif %}
+{% if error %}
+<div class="mb-stack-md p-3 rounded-lg bg-error-container/50 text-error border border-error/20 font-body-sm text-body-sm">{{ error }}</div>
+{% endif %}
+
+<div class="grid grid-cols-12 gap-gutter">
+    <!-- Colonne gauche : configuration -->
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+        <form method="POST" action="{{ url_for('web.launch_campaign') }}">
+        <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding mb-gutter">
+            <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
+                <span class="material-symbols-outlined text-primary">groups</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 1 : Sélectionner les prospects</h3>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
+                {% for p in prospects_verifies %}
+                <label class="relative flex items-center gap-2 p-3 border border-outline-variant rounded cursor-pointer hover:bg-surface-container-low hover:border-primary-container transition-colors">
+                    <input class="text-primary-container focus:ring-primary-container" name="prospect_ids" type="checkbox" value="{{ p.id }}"/>
+                    <span class="font-label-bold text-label-bold text-on-surface">{{ p.company_name }}</span>
+                </label>
+                {% else %}
+                <p class="text-secondary text-body-sm col-span-2">Aucun prospect vérifié disponible — vérifiez vos prospects avant de lancer une campagne.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
+            <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding">
+                <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
+                    <span class="material-symbols-outlined text-primary">inventory_2</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 2 : Produit</h3>
+                </div>
+                <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-10 px-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-inverse-primary outline-none">
+                    {% for produit in produits %}
+                    <option value="{{ produit.id }}">{{ produit.name }}</option>
+                    {% else %}
+                    <option value="">Aucun produit — créez-en un d'abord</option>
+                    {% endfor %}
+                </select>
+            </section>
+
+            <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding">
+                <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
+                    <span class="material-symbols-outlined text-primary">forum</span>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 3 : Canal</h3>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-3 p-2 border border-primary-container bg-surface-container-low rounded cursor-pointer">
+                        <input checked class="text-primary-container focus:ring-primary-container" name="channel" type="radio" value="email"/>
+                        <span class="font-mono-data text-mono-data text-on-surface">Email (SMTP)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-2 border border-outline-variant rounded cursor-pointer hover:bg-surface-container-low transition-colors">
+                        <input class="text-primary-container focus:ring-primary-container" name="channel" type="radio" value="whatsapp"/>
+                        <span class="font-mono-data text-mono-data text-on-surface">WhatsApp Business</span>
+                    </label>
+                </div>
+            </section>
+        </div>
+
+        <div class="flex justify-end mt-gutter">
+            <button type="submit" class="bg-primary-container text-on-primary-container font-label-bold text-label-bold h-10 px-6 rounded flex items-center gap-2 hover:bg-surface-tint hover:text-on-primary transition-colors shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+                Lancer la campagne
+            </button>
+        </div>
+        </form>
+    </div>
+
+    <!-- Colonne droite : aperçu généré par l'IA -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col">
+        <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded flex-1 flex flex-col shadow-sm">
+            <div class="p-4 border-b border-outline-variant bg-surface-container-low rounded-t flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">visibility</span>
+                    <h3 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Aperçu généré</h3>
+                </div>
+            </div>
+            <div class="p-container-padding flex-1">
+                <form method="POST" action="{{ url_for('web.preview_message') }}" class="space-y-2 mb-4">
+                    <select name="prospect_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm">
+                        {% for p in prospects_verifies %}
+                        <option value="{{ p.id }}">{{ p.company_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm">
+                        {% for produit in produits %}
+                        <option value="{{ produit.id }}">{{ produit.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit" class="w-full bg-primary text-on-primary h-9 rounded text-body-sm font-medium hover:bg-on-primary-fixed-variant transition-colors">Générer un aperçu</button>
+                </form>
+
+                {% if preview_message %}
+                <div class="bg-surface border border-outline-variant rounded p-4 shadow-sm relative">
+                    <div class="font-body-md text-body-md text-on-surface whitespace-pre-line leading-relaxed">{{ preview_message }}</div>
+                </div>
+                <div class="text-center mt-2">
+                    <span class="font-body-sm text-body-sm text-secondary flex items-center justify-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+                        Généré via {{ preview_provider }}
+                    </span>
+                </div>
+                {% else %}
+                <p class="text-secondary text-body-sm text-center py-8">Sélectionnez un prospect et un produit puis cliquez sur "Générer un aperçu".</p>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

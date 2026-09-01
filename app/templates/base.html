@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="h-full bg-background dark:bg-background" lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{% block title %}Prospection App{% endblock %}</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config" src="{{ url_for('static', filename='js/tailwind-config.js') }}"></script>
+
+<!-- Theme partagé (material symbols, motion design, blobs) -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}"/>
+
+{% block extra_head %}{% endblock %}
+</head>
+<body class="h-full flex font-body-md text-on-surface bg-background antialiased selection:bg-primary-container selection:text-on-primary-container overflow-hidden">
+
+<!-- Blobs de fond immersifs (Partie 3 du script) -->
+<div class="blob-container blob-theme-{{ blob_theme|default('blue') }}" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+</div>
+
+<!-- SideNavBar -->
+<nav class="app-shell sidebar hidden md:flex bg-surface dark:bg-surface-container-low fixed left-0 top-0 h-full w-64 border-r border-outline-variant dark:border-outline flex-col py-gutter z-50 transition-transform">
+    <!-- Brand Header -->
+    <div class="px-container-padding mb-stack-lg flex items-center gap-stack-sm">
+        <div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center font-display-lg text-display-lg">P</div>
+        <div>
+            <h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-inverse-primary tracking-tight">Prospection App</h1>
+            <p class="font-body-sm text-body-sm text-secondary">Sales Intelligence</p>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="px-container-padding mb-stack-md">
+        <a href="{{ url_for('web.prospects_page') }}" class="w-full bg-primary-container hover:bg-primary text-on-primary-container hover:text-on-primary font-label-bold text-label-bold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors active:scale-95 duration-100 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Nouveau Prospect
+        </a>
+    </div>
+
+    <!-- Nav Links -->
+    <div class="flex-1 overflow-y-auto flex flex-col gap-unit px-unit">
+        {% set nav_items = [
+            ('dashboard',  'web.dashboard_page',  'dashboard',              'Dashboard'),
+            ('prospects',  'web.prospects_page',  'group',                  'Prospects'),
+            ('scraping',   'web.scraping_page',   'search_insights',        'Web Scraping'),
+            ('products',   'web.products_page',   'inventory_2',            'Product Catalog'),
+            ('campaigns',  'web.campaigns_page',  'auto_awesome',           'AI Campaigns'),
+            ('integrations','web.integrations_page','settings_input_component','Integrations'),
+        ] %}
+        {% for key, endpoint, icon, label in nav_items %}
+        <a href="{{ url_for(endpoint) }}"
+           class="flex items-center gap-stack-sm px-4 py-2 rounded-lg transition-colors active:scale-95 duration-100 group
+           {% if active_page == key %}
+               text-primary dark:text-inverse-primary font-bold border-l-2 border-primary dark:border-inverse-primary bg-surface-container-lowest dark:bg-surface-container-high
+           {% else %}
+               text-secondary dark:text-secondary-fixed-dim border-l-2 border-transparent hover:bg-surface-container dark:hover:bg-surface-container-highest
+           {% endif %}">
+            <span class="material-symbols-outlined text-[20px] {% if active_page != key %}group-hover:text-primary transition-colors{% endif %}"
+                  {% if active_page == key %}style="font-variation-settings: 'FILL' 1;"{% endif %}>{{ icon }}</span>
+            <span class="font-label-bold text-label-bold">{{ label }}</span>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- User Profile -->
+    <div class="px-container-padding mt-auto pt-stack-md border-t border-outline-variant dark:border-outline">
+        <div class="flex items-center gap-3 cursor-pointer hover:bg-surface-container p-2 -mx-2 rounded-lg transition-colors">
+            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold">
+                {{ (current_user_username or "U")[0]|upper }}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-bold text-label-bold truncate text-on-surface">{{ current_user_username or "Utilisateur" }}</p>
+                <p class="font-body-sm text-body-sm truncate text-secondary">{{ current_user_email or "" }}</p>
+            </div>
+            <a href="{{ url_for('web.logout') }}" title="Se déconnecter" class="text-secondary hover:text-error transition-colors">
+                <span class="material-symbols-outlined text-[18px]">logout</span>
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content Wrapper -->
+<div class="flex-1 md:ml-64 flex flex-col h-full relative overflow-hidden">
+    <!-- TopAppBar -->
+    <header class="bg-surface dark:bg-surface-container-low fixed top-0 right-0 w-full md:w-[calc(100%-256px)] h-16 border-b border-outline-variant dark:border-outline flex items-center justify-between px-container-padding z-40">
+        <button class="md:hidden text-on-surface hover:bg-surface-container p-2 rounded-lg transition-colors mr-2" aria-label="Ouvrir le menu">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+        <div class="flex-1 max-w-md relative group">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors text-[20px]">search</span>
+            <input class="w-full h-10 pl-10 pr-4 bg-surface-container-lowest border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-container transition-all" placeholder="Rechercher un prospect, une entreprise..." type="text"/>
+        </div>
+        <div class="flex items-center gap-2 ml-4">
+            <button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest rounded-full transition-all duration-200 relative group">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-bold text-label-bold ml-2">
+                {{ (current_user_username or "U")[0]|upper }}
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main id="page-content" class="page-enter flex-1 overflow-y-auto mt-16 p-container-padding">
+        {% block content %}{% endblock %}
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='js/motion.js') }}" defer></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

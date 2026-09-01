@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Prospects - Prospection App{% endblock %}
+
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-stack-md mb-stack-lg">
+    <div>
+        <h2 class="font-headline-md text-headline-md font-extrabold text-on-surface tracking-tight mb-1">Gestion des prospects</h2>
+        <p class="font-body-md text-body-md text-secondary">Gérer et valider les informations de contact.</p>
+    </div>
+    <div class="flex flex-wrap items-center gap-stack-sm">
+        <button onclick="document.getElementById('modal-import-csv').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg font-label-bold text-label-bold text-on-surface hover:bg-surface-container transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">upload_file</span>
+            Importer CSV
+        </button>
+        <button onclick="document.getElementById('modal-add-prospect').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2 bg-primary-container text-on-primary-container rounded-lg font-label-bold text-label-bold hover:bg-primary hover:text-on-primary transition-colors shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">person_add</span>
+            Ajouter un prospect
+        </button>
+    </div>
+</div>
+
+{% if message %}
+<div class="mb-stack-md p-3 rounded-lg bg-tertiary-container/10 text-tertiary border border-tertiary/20 font-body-sm text-body-sm">{{ message }}</div>
+{% endif %}
+{% if error %}
+<div class="mb-stack-md p-3 rounded-lg bg-error-container/50 text-error border border-error/20 font-body-sm text-body-sm">{{ error }}</div>
+{% endif %}
+
+<div class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
+    <div class="p-4 border-b border-outline-variant bg-surface flex justify-between items-center">
+        <span class="font-label-bold text-label-bold text-secondary uppercase tracking-wider">{{ prospects|length }} prospect(s) au total</span>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[1000px]">
+            <thead>
+                <tr class="border-b border-outline-variant bg-surface">
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider w-[200px]">Entreprise</th>
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider w-[160px]">Statut</th>
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider w-[180px]">WhatsApp</th>
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider w-[220px]">Email</th>
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider w-[100px]">Source</th>
+                    <th class="p-4 font-label-bold text-label-bold text-secondary uppercase tracking-wider">Notes</th>
+                </tr>
+            </thead>
+            <tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant">
+                {% for p in prospects %}
+                <tr class="hover:bg-surface-container-low transition-colors group h-[48px]">
+                    <td class="px-4 py-2">
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded bg-primary-fixed-dim text-on-primary-fixed flex items-center justify-center font-label-bold text-[10px]">{{ p.company_name[0]|upper }}</div>
+                            <span class="font-mono-data text-mono-data">{{ p.company_name }}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-2">
+                        {% if p.status == 'verified' %}
+                        <span class="bg-tertiary-container/20 text-tertiary px-2 py-0.5 rounded text-[11px] font-medium">Vérifié</span>
+                        {% elif p.status == 'invalid' %}
+                        <span class="bg-error-container/50 text-error px-2 py-0.5 rounded text-[11px] font-medium">Invalide</span>
+                        {% else %}
+                        <span class="bg-outline-variant/30 text-secondary px-2 py-0.5 rounded text-[11px] font-medium">Brut</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2 font-mono-data text-mono-data text-secondary">{{ p.whatsapp_number or "—" }}</td>
+                    <td class="px-4 py-2 font-mono-data text-mono-data text-secondary">{{ p.email or "—" }}</td>
+                    <td class="px-4 py-2 text-secondary text-[12px] uppercase">{{ p.source }}</td>
+                    <td class="px-4 py-2 text-secondary truncate max-w-[200px]" title="{{ p.notes or '' }}">{{ p.notes or "—" }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6" class="px-4 py-8 text-center text-secondary">Aucun prospect pour le moment. Ajoutez-en un ou lancez un scraping.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Ajouter un prospect manuellement -->
+<div id="modal-add-prospect" class="hidden fixed inset-0 bg-on-surface/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-xl shadow-lg max-w-md w-full p-6">
+        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Ajouter un prospect</h3>
+        <form method="POST" action="{{ url_for('web.create_prospect') }}" class="space-y-3">
+            <input required class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="company_name" placeholder="Nom de l'entreprise" type="text"/>
+            <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="email" placeholder="Email" type="email"/>
+            <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="whatsapp_number" placeholder="Numéro WhatsApp (+237...)" type="text"/>
+            <textarea class="w-full border border-outline-variant rounded p-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none resize-none" name="notes" placeholder="Notes de prospection" rows="3"></textarea>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-add-prospect').classList.add('hidden')" class="px-4 py-2 rounded font-label-bold text-label-bold text-secondary hover:bg-surface-container">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-primary-container text-on-primary-container rounded font-label-bold text-label-bold hover:bg-primary hover:text-on-primary transition-colors">Créer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Import CSV -->
+<div id="modal-import-csv" class="hidden fixed inset-0 bg-on-surface/40 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-xl shadow-lg max-w-md w-full p-6">
+        <h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Importer un fichier CSV</h3>
+        <form method="POST" action="{{ url_for('web.import_csv') }}" enctype="multipart/form-data" class="space-y-3">
+            <input required class="w-full text-body-md" name="fichier" type="file" accept=".csv"/>
+            <p class="text-secondary text-body-sm">Colonnes attendues : company_name, email, whatsapp_number.</p>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="document.getElementById('modal-import-csv').classList.add('hidden')" class="px-4 py-2 rounded font-label-bold text-label-bold text-secondary hover:bg-surface-container">Annuler</button>
+                <button type="submit" class="px-4 py-2 bg-primary-container text-on-primary-container rounded font-label-bold text-label-bold hover:bg-primary hover:text-on-primary transition-colors">Importer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
