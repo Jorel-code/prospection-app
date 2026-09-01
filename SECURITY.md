@@ -18,5 +18,5 @@ Voir `.env.example` pour la liste des variables attendues.
 - Dépendances surveillées automatiquement (Dependabot).
 
 ## Signaler une faille
-En cas de découverte d'une vulnérabilité, contacter [ton email] avant
+En cas de découverte d'une vulnérabilité, contacter jorelbrayan02@gmail.com avant
 toute divulgation publique.
