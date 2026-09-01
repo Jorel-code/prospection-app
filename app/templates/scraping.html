@@ -20,7 +20,7 @@
             <div class="flex items-center justify-between mb-stack-md border-b border-outline-variant pb-3">
                 <h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-wider">Nouveau bot d'extraction</h3>
             </div>
-            <form method="POST" action="{{ url_for('web.launch_scraping') }}" class="space-y-stack-md">
+            <form method="POST" action="{{ url_for('web.launch_scraping') }}" class="space-y-stack-md"><input type="hidden" name="idempotency_key" value="{{ idempotency_key }}"/>
                 <div class="grid grid-cols-2 gap-gutter">
                     <div>
                         <label class="block font-label-bold text-label-bold text-on-surface-variant mb-1 uppercase">Secteur cible</label>

@@ -9,8 +9,8 @@ class ScrapingService:
         self.contact_validator = contact_validator      # IContactValidator
         self.prospect_repository = prospect_repository  # IProspectRepository
 
-    def launch(self, user_id, sector, location, keywords=None):
-        job = ScrapingJob(
+        def launch(self, user_id, sector, location, keywords=None):
+            job = ScrapingJob(
             user_id=user_id, sector=sector, location=location,
             keywords=keywords, engine_used=type(self.scraper_engine).__name__,
             status="running"
@@ -21,8 +21,22 @@ class ScrapingService:
         try:
             scraped_prospects = self.scraper_engine.scrape(sector, location, keywords)
 
-            importes, rejetes = 0, 0
+            # Idempotence : on récupère les noms déjà connus pour cet utilisateur,
+            # pour ne jamais réinsérer deux fois la même entreprise scrapée.
+            noms_existants = {
+                p.company_name.strip().lower()
+                for p in Prospect.query.filter_by(user_id=user_id).all()
+            }
+
+            importes, rejetes, doublons = 0, 0, 0
             for donnee in scraped_prospects:
+                nom_normalise = (donnee.company_name or "").strip().lower()
+
+                if nom_normalise in noms_existants:
+                    doublons += 1
+                    continue
+                noms_existants.add(nom_normalise)
+
                 whatsapp_normalise = self.contact_validator.normalize_whatsapp(donnee.whatsapp_number)
                 erreur = self.contact_validator.validate_prospect_contact(
                     donnee.company_name, donnee.email, whatsapp_normalise
@@ -47,7 +61,7 @@ class ScrapingService:
             job.finished_at = datetime.utcnow()
             db.session.commit()
 
-            return {"job_id": job.id, "trouves": len(scraped_prospects), "importes": importes, "rejetes": rejetes}
+            return {"job_id": job.id, "trouves": len(scraped_prospects), "importes": importes, "rejetes": rejetes, "doublons": doublons}
 
         except Exception as e:
             job.status = "failed"

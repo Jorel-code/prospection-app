@@ -12,6 +12,7 @@ duplication de la logique de sécurité.
 """
 from functools import wraps
 from datetime import datetime
+import uuid
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app
 
@@ -23,6 +24,7 @@ from app.container import (
     get_campaign_service,
     get_auth_service,
 )
+
 from app.extensions import db
 from app.models.user import User
 from app.models.prospect import Prospect
@@ -30,6 +32,7 @@ from app.models.product import Product
 from app.models.scraping_job import ScrapingJob
 from app.models.campaign import Campaign
 from app.models.campaign_message import CampaignMessage
+from app.models.idempotency_key import IdempotencyKey
 
 web_bp = Blueprint("web", __name__)
 
@@ -62,6 +65,21 @@ def login():
             return render_template("login.html", error=str(e))
     return render_template("login.html")
 
+@web_bp.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        service = get_auth_service()
+        try:
+            user = service.register(
+                username=request.form.get("username"),
+                email=request.form.get("email"),
+                password=request.form.get("password"),
+            )
+            session["user_id"] = user.id
+            return redirect(url_for("web.dashboard_page"))
+        except ValueError as e:
+            return render_template("register.html", error=str(e))
+    return render_template("register.html")
 
 @web_bp.route("/logout")
 def logout():
@@ -88,6 +106,17 @@ def _temps_ecoule(moment):
     if heures < 24:
         return f"il y a {heures} h"
     return f"il y a {heures // 24} j"
+
+def _idempotent(key, user_id, endpoint):
+    """True si c'est la première fois qu'on voit cette clé (on doit exécuter),
+    False si déjà traitée (double soumission à ignorer)."""
+    if not key:
+        return True
+    if IdempotencyKey.query.filter_by(key=key).first():
+        return False
+    db.session.add(IdempotencyKey(key=key, user_id=user_id, endpoint=endpoint))
+    db.session.commit()
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -303,10 +332,10 @@ def scraping_page():
         scraping_jobs=scraping_jobs,
         scraping_stats=scraping_stats,
         message=request.args.get("message"),
+        idempotency_key=str(uuid.uuid4()),
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
     )
-
 
 @web_bp.route("/app/scraping/launch", methods=["POST"])
 @login_required_web
@@ -314,6 +343,10 @@ def launch_scraping():
     import threading
 
     user_id = session["user_id"]
+    idempotency_key = request.form.get("idempotency_key")
+    if not _idempotent(idempotency_key, user_id, "launch_scraping"):
+        return redirect(url_for("web.scraping_page", message="Ce scraping a déjà été lancé (double soumission ignorée)."))
+
     sector = request.form.get("sector")
     location = request.form.get("location")
     keywords = request.form.get("keywords")
@@ -326,7 +359,6 @@ def launch_scraping():
 
     threading.Thread(target=tache_fond).start()
     return redirect(url_for("web.scraping_page", message="Scraping lancé en arrière-plan. Rafraîchissez dans quelques secondes."))
-
 
 # ---------------------------------------------------------------------------
 # Campagnes IA
@@ -349,6 +381,7 @@ def campaigns_page():
         error=request.args.get("error"),
         preview_message=None,
         preview_provider=None,
+        idempotency_key=str(uuid.uuid4()),
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
     )
@@ -393,6 +426,9 @@ def preview_message():
 @login_required_web
 def launch_campaign():
     user_id = session["user_id"]
+    idempotency_key = request.form.get("idempotency_key")
+    if not _idempotent(idempotency_key, user_id, "launch_campaign"):
+        return redirect(url_for("web.campaigns_page", message="Cette campagne a déjà été lancée (double soumission ignorée)."))
     channel = request.form.get("channel")
     prospect_ids = [int(pid) for pid in request.form.getlist("prospect_ids")]
     product_id = request.form.get("product_id")

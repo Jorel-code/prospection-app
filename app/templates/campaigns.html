@@ -19,7 +19,7 @@
 <div class="grid grid-cols-12 gap-gutter">
     <!-- Colonne gauche : configuration -->
     <div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
-        <form method="POST" action="{{ url_for('web.launch_campaign') }}">
+        <form method="POST" action="{{ url_for('web.launch_campaign') }}"><input type="hidden" name="idempotency_key" value="{{ idempotency_key }}"/>
         <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding mb-gutter">
             <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
                 <span class="material-symbols-outlined text-primary">groups</span>

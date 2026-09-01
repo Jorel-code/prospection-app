@@ -15,6 +15,7 @@ from app.models.product import Product
 from app.models.scraping_job import ScrapingJob
 from app.models.campaign import Campaign
 from app.models.campaign_message import CampaignMessage
+from app.models.idempotency_key import IdempotencyKey
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
