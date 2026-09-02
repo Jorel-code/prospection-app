@@ -221,8 +221,6 @@ def prospects_page():
         active_page="prospects",
         blob_theme="blue",
         prospects=prospects,
-        idempotency_key_prospect=str(uuid.uuid4()),
-        idempotency_key_csv=str(uuid.uuid4()),
         message=request.args.get("message"),
         error=request.args.get("error"),
         current_user_username=_username(user_id),

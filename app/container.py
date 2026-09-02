@@ -5,6 +5,7 @@ from app.repositories.sqlalchemy_product_repository import SQLAlchemyProductRepo
 from app.services.product_service import ProductService
 from app.integrations.scrapers.playwright_scraper import PlaywrightScraper
 from app.integrations.scrapers.bs4_scraper import BS4Scraper
+from app.integrations.scrapers.overpass_scraper import OverpassScraper
 from app.services.scraping_service import ScrapingService
 from app.integrations.ai_providers.groq_provider import GroqProvider
 from app.integrations.ai_providers.gemini_provider import GeminiProvider
@@ -19,7 +20,7 @@ from app.services.auth_service import AuthService
 prospect_repository = SQLAlchemyProspectRepository()
 contact_validator = ContactValidator()
 product_repository = SQLAlchemyProductRepository()
-scraper_engine = BS4Scraper()
+scraper_engine = OverpassScraper()
 ai_provider = FallbackAIClient(providers=[GroqProvider(), GeminiProvider()])
 channel_sender = EmailSender()
 rate_limiter = RateLimiter(max_appels=10, periode_secondes=60)
