@@ -70,5 +70,6 @@ class ScrapingService:
         except Exception as e:
             job.status = "failed"
             job.finished_at = datetime.utcnow()
+            job.error_detail = str(e)
             db.session.commit()
             print(f"[ScrapingService] Job {job_id} a échoué : {e}")

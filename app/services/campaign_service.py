@@ -20,33 +20,49 @@ class CampaignService:
         db.session.commit()
 
         envoyes, echecs = 0, 0
+        prospect_ids_traites = set()  # évite les doublons si la même liste contient 2x le même id
 
         for prospect_id in prospect_ids:
-            prospect = self.prospect_repository.find_by_id(prospect_id)
+            if prospect_id in prospect_ids_traites:
+                continue
+            prospect_ids_traites.add(prospect_id)
 
-            generated = self.ai_generation_service.generate_message(prospect_id, product_id, channel)
+            try:
+                prospect = self.prospect_repository.find_by_id(prospect_id)
+                if not prospect:
+                    echecs += 1
+                    continue
 
-            campaign_message = CampaignMessage(
-                campaign_id=campaign.id, prospect_id=prospect_id,
-                generated_message=generated.content, channel=channel, status="queued"
-            )
-            db.session.add(campaign_message)
-            db.session.commit()
+                generated = self.ai_generation_service.generate_message(prospect_id, product_id, channel)
 
-            self.rate_limiter.wait_if_needed()
+                campaign_message = CampaignMessage(
+                    campaign_id=campaign.id, prospect_id=prospect_id,
+                    generated_message=generated.content, channel=channel, status="queued"
+                )
+                db.session.add(campaign_message)
+                db.session.commit()
 
-            destinataire = prospect.email if channel == "email" else prospect.whatsapp_number
-            resultat = self.channel_sender.send(destinataire, generated.content)
+                self.rate_limiter.wait_if_needed()
 
-            campaign_message.status = "sent" if resultat["statut"] == "envoye" else "failed"
-            campaign_message.error_detail = resultat.get("raison")
-            campaign_message.sent_at = datetime.utcnow() if resultat["statut"] == "envoye" else None
-            db.session.commit()
+                destinataire = prospect.email if channel == "email" else prospect.whatsapp_number
+                resultat = self.channel_sender.send(destinataire, generated.content)
 
-            if resultat["statut"] == "envoye":
-                envoyes += 1
-            else:
+                campaign_message.status = "sent" if resultat["statut"] == "envoye" else "failed"
+                campaign_message.error_detail = resultat.get("raison")
+                campaign_message.sent_at = datetime.utcnow() if resultat["statut"] == "envoye" else None
+                db.session.commit()
+
+                if resultat["statut"] == "envoye":
+                    envoyes += 1
+                else:
+                    echecs += 1
+
+            except Exception as e:
+                # Une erreur sur UN prospect ne doit jamais faire échouer toute la campagne.
+                print(f"[CampaignService] Échec pour prospect_id={prospect_id} : {e}")
                 echecs += 1
+                db.session.rollback()
+                continue
 
         campaign.status = "completed"
         db.session.commit()

@@ -126,15 +126,20 @@ def _temps_ecoule(moment):
     return f"il y a {heures // 24} j"
 
 def _idempotent(key, user_id, endpoint):
-    """True si c'est la première fois qu'on voit cette clé (on doit exécuter),
-    False si déjà traitée (double soumission à ignorer)."""
     if not key:
         return True
+    from sqlalchemy.exc import IntegrityError
+
     if IdempotencyKey.query.filter_by(key=key).first():
         return False
-    db.session.add(IdempotencyKey(key=key, user_id=user_id, endpoint=endpoint))
-    db.session.commit()
-    return True
+
+    try:
+        db.session.add(IdempotencyKey(key=key, user_id=user_id, endpoint=endpoint))
+        db.session.commit()
+        return True
+    except IntegrityError:
+        db.session.rollback()
+        return False  # une requête concurrente a gagné la course, on traite comme "déjà fait"
 
 
 # ---------------------------------------------------------------------------

@@ -12,6 +12,7 @@ class ScrapingJob(db.Model):
     engine_used = db.Column(db.String(50))
     status = db.Column(db.String(20), default="pending")  # pending|running|done|failed
     results_count = db.Column(db.Integer, default=0)
-
+    
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     finished_at = db.Column(db.DateTime, nullable=True)
+    error_detail = db.Column(db.Text, nullable=True)

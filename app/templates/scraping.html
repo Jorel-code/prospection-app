@@ -84,6 +84,9 @@
                                 <span class="inline-flex items-center gap-1 bg-primary-container/20 text-primary px-2 py-0.5 rounded text-[11px] font-medium">Terminé</span>
                                 {% elif job.status == 'failed' %}
                                 <span class="inline-flex items-center gap-1 bg-error-container/50 text-error px-2 py-0.5 rounded text-[11px] font-medium">Échoué</span>
+                                {% if job.status == 'failed' and job.error_detail %}
+                                <div class="text-[10px] text-error mt-1 truncate max-w-[200px]" title="{{ job.error_detail }}">{{ job.error_detail }}</div>
+                                {% endif %}
                                 {% else %}
                                 <span class="inline-flex items-center gap-1 bg-outline-variant/30 text-secondary px-2 py-0.5 rounded text-[11px] font-medium">En attente</span>
                                 {% endif %}

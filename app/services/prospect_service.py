@@ -52,9 +52,19 @@ class ProspectService:
 
     def import_csv(self, user_id, fichier_csv):
         import pandas as pd
+        try:
+            df = pd.read_csv(fichier_csv)
+        except pd.errors.EmptyDataError:
+            raise ValueError("Le fichier CSV est vide.")
+        except pd.errors.ParserError:
+            raise ValueError("Le fichier CSV est mal formé et n'a pas pu être lu.")
+        except UnicodeDecodeError:
+            raise ValueError("Le fichier CSV a un encodage invalide (essayez de l'enregistrer en UTF-8).")
 
-        df = pd.read_csv(fichier_csv)
         df.columns = [c.strip().lower().replace(" ", "_") for c in df.columns]
+
+        if "company_name" not in df.columns:
+            raise ValueError("La colonne 'company_name' est obligatoire dans le fichier CSV.")
 
         resultats = {"total": len(df), "importes": 0, "rejetes": 0, "doublons": 0, "erreurs": []}
         emails_vus = set()
