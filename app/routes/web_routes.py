@@ -13,6 +13,8 @@ duplication de la logique de sécurité.
 from functools import wraps
 from datetime import datetime
 import uuid
+from app.extensions import limiter
+import traceback
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, current_app
 
@@ -48,6 +50,22 @@ def login_required_web(fonction):
             return redirect(url_for("web.login"))
         return fonction(*args, **kwargs)
     return wrapper
+
+def gestion_erreurs_web(route_de_secours):
+    """Attrape TOUTE exception non prévue dans une route, log la trace complète
+    côté serveur, et redirige l'utilisateur vers une page connue avec un message
+    clair plutôt que de laisser Flask afficher une page d'erreur brute (500)."""
+    def decorateur(fonction):
+        @wraps(fonction)
+        def wrapper(*args, **kwargs):
+            try:
+                return fonction(*args, **kwargs)
+            except Exception as e:
+                print(f"[ERREUR NON GEREE] dans {fonction.__name__} : {e}")
+                traceback.print_exc()
+                return redirect(url_for(route_de_secours, error="Une erreur inattendue est survenue. L'équipe technique a été notifiée."))
+        return wrapper
+    return decorateur
 
 
 @web_bp.route("/login", methods=["GET", "POST"])
@@ -230,6 +248,7 @@ def prospects_page():
 
 @web_bp.route("/app/prospects/create", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.prospects_page")
 def create_prospect():
     user_id = session["user_id"]
     idempotency_key = request.form.get("idempotency_key")
@@ -252,6 +271,7 @@ def create_prospect():
 
 @web_bp.route("/app/prospects/import-csv", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.prospects_page")
 def import_csv():
     user_id = session["user_id"]
     idempotency_key = request.form.get("idempotency_key")
@@ -290,6 +310,7 @@ def products_page():
 
 @web_bp.route("/app/products/create", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.prospects_page")
 def create_product():
     user_id = session["user_id"]
     idempotency_key = request.form.get("idempotency_key")
@@ -345,13 +366,14 @@ def scraping_page():
         scraping_jobs=scraping_jobs,
         scraping_stats=scraping_stats,
         message=request.args.get("message"),
-        idempotency_key=str(uuid.uuid4()),
+        job_id=request.args.get("job_id"),
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
     )
 
 @web_bp.route("/app/scraping/launch", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.scraping_page")
 def launch_scraping():
     import threading
 
@@ -360,19 +382,49 @@ def launch_scraping():
     if not _idempotent(idempotency_key, user_id, "launch_scraping"):
         return redirect(url_for("web.scraping_page", message="Ce scraping a déjà été lancé (double soumission ignorée)."))
 
-    sector = request.form.get("sector")
-    location = request.form.get("location")
-    keywords = request.form.get("keywords")
+    service = get_scraping_service()
+    job = service.create_job(
+        user_id=user_id,
+        sector=request.form.get("sector"),
+        location=request.form.get("location"),
+        keywords=request.form.get("keywords"),
+    )
+
     app_ctx = current_app._get_current_object()
 
-    def tache_fond():
+    def tache_fond(job_id):
         with app_ctx.app_context():
-            service = get_scraping_service()
-            service.launch(user_id=user_id, sector=sector, location=location, keywords=keywords)
+            try:
+                get_scraping_service().run_job(job_id)
+            except Exception as e:
+                print(f"[ERREUR THREAD SCRAPING] job_id={job_id} : {e}")
+                traceback.print_exc()
+                try:
+                    job = ScrapingJob.query.get(job_id)
+                    if job and job.status not in ("done", "failed"):
+                        job.status = "failed"
+                        job.finished_at = datetime.utcnow()
+                        db.session.commit()
+                except Exception:
+                    pass
 
-    threading.Thread(target=tache_fond).start()
-    return redirect(url_for("web.scraping_page", message="Scraping lancé en arrière-plan. Rafraîchissez dans quelques secondes."))
+    threading.Thread(target=tache_fond, args=(job.id,)).start()
 
+    return redirect(url_for("web.scraping_page", job_id=job.id))
+
+
+@web_bp.route("/app/scraping/status/<int:job_id>")
+@login_required_web
+@limiter.exempt
+def scraping_job_status(job_id):
+    from flask import jsonify
+    job = ScrapingJob.query.get(job_id)
+    if not job or job.user_id != session["user_id"]:
+        return jsonify({"error": "Job introuvable"}), 404
+    return jsonify({
+        "status": job.status,
+        "results_count": job.results_count,
+    })
 # ---------------------------------------------------------------------------
 # Campagnes IA
 # ---------------------------------------------------------------------------
@@ -402,6 +454,7 @@ def campaigns_page():
 
 @web_bp.route("/app/campaigns/preview", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.campaigns_page")
 def preview_message():
     user_id = session["user_id"]
     prospects_verifies = Prospect.query.filter_by(user_id=user_id, status="verified").all()
@@ -437,6 +490,7 @@ def preview_message():
 
 @web_bp.route("/app/campaigns/launch", methods=["POST"])
 @login_required_web
+@gestion_erreurs_web("web.campaigns_page")
 def launch_campaign():
     user_id = session["user_id"]
     idempotency_key = request.form.get("idempotency_key")

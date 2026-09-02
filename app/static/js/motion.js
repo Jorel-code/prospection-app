@@ -73,10 +73,22 @@
 
         elements.forEach((el) => observer.observe(el));
     }
+    function initRechercheGlobale() {
+        const input = document.getElementById("global-search-input");
+        if (!input) return;
 
+        input.addEventListener("input", () => {
+            const requete = input.value.trim().toLowerCase();
+            document.querySelectorAll(".js-searchable").forEach((ligne) => {
+                const texte = (ligne.dataset.search || "").toLowerCase();
+                ligne.style.display = texte.includes(requete) ? "" : "none";
+            });
+        });
+    }
     document.addEventListener("DOMContentLoaded", () => {
         initCompteurs();
         initRevealOnScroll();
+        initRechercheGlobale();
     });
 
     // Exposé globalement si un template a besoin de relancer un compteur

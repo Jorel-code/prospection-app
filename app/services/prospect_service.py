@@ -10,6 +10,9 @@ class ProspectService:
             raise ValueError(erreur)
 
         from app.models.prospect import Prospect
+        from app.extensions import db
+        from sqlalchemy.exc import IntegrityError
+
         prospect = Prospect(
             user_id=user_id,
             company_name=company_name,
@@ -19,7 +22,16 @@ class ProspectService:
             source=source,
             status="verified"
         )
-        return self.prospect_repository.save(prospect)
+
+        try:
+            return self.prospect_repository.save(prospect)
+        except IntegrityError:
+            db.session.rollback()
+            if email:
+                raise ValueError(f"Un prospect existe déjà avec l'email '{email}'.")
+            if whatsapp_normalise:
+                raise ValueError(f"Un prospect existe déjà avec le numéro '{whatsapp_normalise}'.")
+            raise ValueError("Un prospect avec ces coordonnées existe déjà.")
 
     def create_bulk(self, user_id, lignes, source="manual"):
         resultats = {"crees": 0, "erreurs": []}

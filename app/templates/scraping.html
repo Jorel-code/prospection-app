@@ -2,6 +2,17 @@
 {% block title %}Web Scraping - Prospection App{% endblock %}
 
 {% block content %}
+{% if job_id %}
+<div id="progress-panel" class="mb-stack-md bg-primary-container/10 border border-primary-container/30 rounded-lg p-4">
+    <div class="flex items-center justify-between mb-2">
+        <span id="progress-text" class="font-label-bold text-label-bold text-primary">Scraping en cours...</span>
+        <span id="progress-badge" class="text-[11px] px-2 py-0.5 rounded bg-primary-container/20 text-primary uppercase font-medium">En cours</span>
+    </div>
+    <div class="w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+        <div class="h-full progress-animated w-full"></div>
+    </div>
+</div>
+{% endif %}
 <div class="mb-stack-lg flex justify-between items-end">
     <div>
         <h2 class="font-headline-md text-headline-md font-bold text-on-surface">Centre de scraping</h2>
@@ -136,4 +147,37 @@
         </div>
     </div>
 </div>
+{% block extra_scripts %}
+{% if job_id %}
+<script>
+(function () {
+    const jobId = {{ job_id }};
+    const panel = document.getElementById("progress-panel");
+    const texte = document.getElementById("progress-text");
+    const badge = document.getElementById("progress-badge");
+
+    function verifierStatut() {
+        fetch("/app/scraping/status/" + jobId)
+            .then((r) => r.json())
+            .then((data) => {
+                if (data.status === "done") {
+                    texte.textContent = data.results_count + " prospect(s) importé(s) — actualisation...";
+                    badge.textContent = "Terminé";
+                    setTimeout(() => { window.location.href = "/app/scraping"; }, 1200);
+                } else if (data.status === "failed") {
+                    texte.textContent = "Le scraping a échoué.";
+                    badge.textContent = "Échoué";
+                    badge.className = "text-[11px] px-2 py-0.5 rounded bg-error-container/50 text-error uppercase font-medium";
+                } else {
+                    setTimeout(verifierStatut, 3000);
+                }
+            })
+            .catch(() => setTimeout(verifierStatut, 5000));
+    }
+
+    verifierStatut();
+})();
+</script>
+{% endif %}
+{% endblock %}
 {% endblock %}

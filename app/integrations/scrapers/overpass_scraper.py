@@ -73,18 +73,36 @@ class OverpassScraper(IScraperEngine):
             print(f"[OverpassScraper] ERREUR géocodage : {e}")
             return None
 
+    MAPPING_SECTEURS = {
+        "informatique": ['shop="computer"', 'shop="electronics"', 'office="it"'],
+        "restauration": ['amenity="restaurant"', 'amenity="cafe"', 'amenity="fast_food"'],
+        "sante": ['amenity="pharmacy"', 'amenity="clinic"', 'amenity="hospital"'],
+        "finance": ['amenity="bank"', 'office="financial"', 'office="insurance"'],
+        "btp": ['shop="hardware"', 'craft="builder"', 'office="construction"'],
+        "education": ['amenity="school"', 'amenity="university"', 'amenity="college"'],
+    }
+
     def _interroger_overpass(self, sector, location):
         coords = self._geocoder_location(location)
         if not coords:
             return []
         lat, lon = coords
 
+        secteur_normalise = (sector or "").strip().lower()
+        filtres = self.MAPPING_SECTEURS.get(secteur_normalise)
+
+        if filtres:
+            clauses = "\n".join(f'  node[{f}](around:15000,{lat},{lon});' for f in filtres)
+            print(f"[OverpassScraper] Secteur reconnu '{secteur_normalise}' -> {len(filtres)} filtre(s) ciblé(s)")
+        else:
+            clauses = f"""  node["shop"](around:15000,{lat},{lon});
+  node["office"](around:15000,{lat},{lon});"""
+            print(f"[OverpassScraper] Secteur '{secteur_normalise}' non reconnu -> recherche générale (shop+office)")
+
         requete = f"""
         [out:json][timeout:60];
         (
-          node["shop"](around:15000,{lat},{lon});
-          node["office"](around:15000,{lat},{lon});
-          node["amenity"="restaurant"](around:15000,{lat},{lon});
+{clauses}
         );
         out body 40;
         """
@@ -93,24 +111,20 @@ class OverpassScraper(IScraperEngine):
             try:
                 response = requests.post(url, data={"data": requete}, headers=self.HEADERS, timeout=70)
                 print(f"[OverpassScraper] {url} -> status_code={response.status_code}")
-
                 if response.status_code != 200:
                     continue
-
                 data = response.json()
                 elements = data.get("elements", [])
                 print(f"[OverpassScraper] {len(elements)} éléments bruts reçus")
-
                 if elements:
                     return self._parser_elements(elements)
-
             except Exception as e:
                 print(f"[OverpassScraper] ERREUR sur {url} : {e}")
                 continue
 
         print("[OverpassScraper] Tous les serveurs Overpass ont échoué.")
         return []
-
+        
     def _parser_elements(self, elements):
         entreprises = []
         for element in elements:

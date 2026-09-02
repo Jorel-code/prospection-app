@@ -44,7 +44,7 @@
             </thead>
             <tbody class="font-body-md text-body-md text-on-surface divide-y divide-outline-variant">
                 {% for p in prospects %}
-                <tr class="hover:bg-surface-container-low transition-colors group h-[48px]">
+                <tr class="js-searchable hover:bg-surface-container-low transition-colors group h-[48px]" data-search="{{ p.company_name|lower }} {{ p.email or '' }} {{ p.whatsapp_number or '' }}">
                     <td class="px-4 py-2">
                         <div class="flex items-center gap-2">
                             <div class="w-6 h-6 rounded bg-primary-fixed-dim text-on-primary-fixed flex items-center justify-center font-label-bold text-[10px]">{{ p.company_name[0]|upper }}</div>

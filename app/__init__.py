@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_talisman import Talisman
 from flask_cors import CORS
 from app.config import Config
 from app.extensions import db, jwt, limiter
+from datetime import datetime
 
 def create_app():
     app = Flask(__name__)
@@ -47,5 +48,20 @@ def create_app():
     app.register_blueprint(campaign_bp)
     app.register_blueprint(web_bp)
 
+    @app.errorhandler(404)
+    def page_non_trouvee(e):
+        return render_template("erreur.html", code=404, message="Page introuvable."), 404
 
+    @app.errorhandler(500)
+    def erreur_serveur(e):
+        return render_template("erreur.html", code=500, message="Une erreur interne est survenue."), 500
+
+    with app.app_context():
+        jobs_orphelins = ScrapingJob.query.filter(ScrapingJob.status.in_(["pending", "running"])).all()
+        for job in jobs_orphelins:
+            job.status = "failed"
+            job.finished_at = datetime.utcnow()
+        if jobs_orphelins:
+            db.session.commit()
+            print(f"[Startup] {len(jobs_orphelins)} job(s) orphelin(s) marqué(s) comme échoués.")
     return app

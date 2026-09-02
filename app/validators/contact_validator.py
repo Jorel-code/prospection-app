@@ -13,7 +13,17 @@ class ContactValidator(IContactValidator):
     def normalize_whatsapp(self, numero) -> str:
         if not numero:
             return None
-        return re.sub(r"[\s\-\(\)]", "", numero)
+        numero_propre = re.sub(r"[\s\-\(\)]", "", numero)
+
+        # Heuristique : un numéro camerounais local (9 chiffres, commence par
+        # 6 ou 2) sans indicatif -> on ajoute +237. Best-effort, pas garanti
+        # à 100% pour tous les formats possibles.
+        if re.match(r"^[62]\d{8}$", numero_propre):
+            return "+237" + numero_propre
+        if numero_propre.startswith("237") and not numero_propre.startswith("+"):
+            return "+" + numero_propre
+
+        return numero_propre
 
     def is_valid_whatsapp(self, numero) -> bool:
         numero_normalise = self.normalize_whatsapp(numero)
