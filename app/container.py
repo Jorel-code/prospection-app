@@ -51,7 +51,10 @@ def get_ai_generation_service():
         product_repository=product_repository      # déjà défini
     )
 
-def get_campaign_service():
+def get_campaign_service(channel="email"):
+    # NOTE: WhatsApp pas encore branché (en attente du compte Meta) — le paramètre
+    # channel est accepté dès maintenant pour la compatibilité des routes, mais
+    # seul EmailSender est utilisé tant que WhatsAppSender n'est pas ajouté.
     return CampaignService(
         channel_sender=channel_sender,
         ai_generation_service=get_ai_generation_service(),
