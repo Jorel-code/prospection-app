@@ -1,7 +1,5 @@
 from datetime import datetime
 from app.extensions import db
-from app.models.scraping_job import ScrapingJob
-from app.models.prospect import Prospect
 
 class ScrapingService:
     def __init__(self, scraper_engine, contact_validator, prospect_repository):
@@ -9,8 +7,11 @@ class ScrapingService:
         self.contact_validator = contact_validator      # IContactValidator
         self.prospect_repository = prospect_repository  # IProspectRepository
 
-        def launch(self, user_id, sector, location, keywords=None):
-            job = ScrapingJob(
+    def launch(self, user_id, sector, location, keywords=None):
+        from app.models.scraping_job import ScrapingJob
+        from app.models.prospect import Prospect
+
+        job = ScrapingJob(
             user_id=user_id, sector=sector, location=location,
             keywords=keywords, engine_used=type(self.scraper_engine).__name__,
             status="running"
@@ -61,7 +62,10 @@ class ScrapingService:
             job.finished_at = datetime.utcnow()
             db.session.commit()
 
-            return {"job_id": job.id, "trouves": len(scraped_prospects), "importes": importes, "rejetes": rejetes, "doublons": doublons}
+            return {
+                "job_id": job.id, "trouves": len(scraped_prospects),
+                "importes": importes, "rejetes": rejetes, "doublons": doublons
+            }
 
         except Exception as e:
             job.status = "failed"

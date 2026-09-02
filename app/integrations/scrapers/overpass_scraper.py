@@ -20,8 +20,13 @@ class OverpassScraper(IScraperEngine):
 
     HEADERS = {"User-Agent": "ProspectionAppBot/1.0 (Projet academique; contact: tonemail@exemple.com)"}
 
+    URLS_OVERPASS = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+    ]
+
     def scrape(self, sector: str, location: str, keywords: str = None) -> list:
-        entreprises_osm = self._interroger_overpass(sector, location)
+        entreprises_osm = self._interroger_overpass(sector, location) or []
 
         resultats = []
         for entreprise in entreprises_osm:
@@ -29,7 +34,7 @@ class OverpassScraper(IScraperEngine):
 
             if not site_web:
                 site_web = self._chercher_site_web_duckduckgo(entreprise["nom"], location)
-                time.sleep(random.uniform(1.5, 3))  # respect du site interrogé
+                time.sleep(random.uniform(1.5, 3))
 
             email, telephone_enrichi = None, None
             if site_web:
@@ -48,30 +53,67 @@ class OverpassScraper(IScraperEngine):
     # ------------------------------------------------------------------
     # Étage 1 : OpenStreetMap Overpass API
     # ------------------------------------------------------------------
-    def _interroger_overpass(self, sector, location):
-        requete = f"""
-        [out:json][timeout:25];
-        area["name"~"{location}",i]->.zone;
-        (
-          node["shop"](area.zone);
-          node["office"](area.zone);
-          node["amenity"="restaurant"](area.zone);
-        );
-        out body 100;
-        """
+    def _geocoder_location(self, location):
+        """Convertit un nom de lieu ('Douala') en coordonnées GPS via Nominatim."""
         try:
-            response = requests.post(
-                "https://overpass-api.de/api/interpreter",
-                data={"data": requete},
+            response = requests.get(
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": location, "format": "json", "limit": 1},
                 headers=self.HEADERS,
-                timeout=30
+                timeout=15
             )
-            data = response.json()
-        except Exception:
-            return []
+            resultats = response.json()
+            if not resultats:
+                print(f"[OverpassScraper] Nominatim: aucun résultat pour '{location}'")
+                return None
+            lat, lon = float(resultats[0]["lat"]), float(resultats[0]["lon"])
+            print(f"[OverpassScraper] '{location}' géocodé -> lat={lat}, lon={lon}")
+            return lat, lon
+        except Exception as e:
+            print(f"[OverpassScraper] ERREUR géocodage : {e}")
+            return None
 
+    def _interroger_overpass(self, sector, location):
+        coords = self._geocoder_location(location)
+        if not coords:
+            return []
+        lat, lon = coords
+
+        requete = f"""
+        [out:json][timeout:60];
+        (
+          node["shop"](around:15000,{lat},{lon});
+          node["office"](around:15000,{lat},{lon});
+          node["amenity"="restaurant"](around:15000,{lat},{lon});
+        );
+        out body 40;
+        """
+
+        for url in self.URLS_OVERPASS:
+            try:
+                response = requests.post(url, data={"data": requete}, headers=self.HEADERS, timeout=70)
+                print(f"[OverpassScraper] {url} -> status_code={response.status_code}")
+
+                if response.status_code != 200:
+                    continue
+
+                data = response.json()
+                elements = data.get("elements", [])
+                print(f"[OverpassScraper] {len(elements)} éléments bruts reçus")
+
+                if elements:
+                    return self._parser_elements(elements)
+
+            except Exception as e:
+                print(f"[OverpassScraper] ERREUR sur {url} : {e}")
+                continue
+
+        print("[OverpassScraper] Tous les serveurs Overpass ont échoué.")
+        return []
+
+    def _parser_elements(self, elements):
         entreprises = []
-        for element in data.get("elements", []):
+        for element in elements:
             tags = element.get("tags", {})
             nom = tags.get("name")
             if not nom:
@@ -98,8 +140,8 @@ class OverpassScraper(IScraperEngine):
             premier_lien = soup.select_one("a.result__a")
             if premier_lien and premier_lien.get("href"):
                 return premier_lien["href"]
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"[OverpassScraper] DuckDuckGo échec pour '{nom_entreprise}': {e}")
         return None
 
     # ------------------------------------------------------------------
