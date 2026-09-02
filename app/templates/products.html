@@ -58,7 +58,7 @@
 <div id="modal-add-product" class="hidden fixed inset-0 bg-on-surface/40 z-50 flex items-center justify-center p-4">
     <div class="bg-surface-container-lowest rounded-xl shadow-lg max-w-md w-full p-6">
         <h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Ajouter un produit</h3>
-        <form method="POST" action="{{ url_for('web.create_product') }}" class="space-y-3">
+        <form method="POST" action="{{ url_for('web.create_product') }}" class="space-y-3"><input type="hidden" name="idempotency_key" value="{{ idempotency_key_product }}"/>
             <input required class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="name" placeholder="Nom du produit" type="text"/>
             <textarea class="w-full border border-outline-variant rounded p-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none resize-none" name="description" placeholder="Description" rows="3"></textarea>
             <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="image_url" placeholder="URL de l'image (optionnel)" type="text"/>

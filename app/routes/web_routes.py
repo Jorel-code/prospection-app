@@ -221,6 +221,8 @@ def prospects_page():
         active_page="prospects",
         blob_theme="blue",
         prospects=prospects,
+        idempotency_key_prospect=str(uuid.uuid4()),
+        idempotency_key_csv=str(uuid.uuid4()),
         message=request.args.get("message"),
         error=request.args.get("error"),
         current_user_username=_username(user_id),
@@ -231,6 +233,10 @@ def prospects_page():
 @web_bp.route("/app/prospects/create", methods=["POST"])
 @login_required_web
 def create_prospect():
+    user_id = session["user_id"]
+    idempotency_key = request.form.get("idempotency_key")
+    if not _idempotent(idempotency_key, user_id, "create_prospect"):
+        return redirect(url_for("web.prospects_page", message="Ce prospect a déjà été créé (double soumission ignorée)."))
     service = get_prospect_service()
     try:
         service.create(
@@ -249,6 +255,10 @@ def create_prospect():
 @web_bp.route("/app/prospects/import-csv", methods=["POST"])
 @login_required_web
 def import_csv():
+    user_id = session["user_id"]
+    idempotency_key = request.form.get("idempotency_key")
+    if not _idempotent(idempotency_key, user_id, "import_csv"):
+        return redirect(url_for("web.prospects_page", message="Cet import a déjà été traité (double soumission ignorée)."))
     fichier = request.files.get("fichier")
     if not fichier or not fichier.filename.endswith(".csv"):
         return redirect(url_for("web.prospects_page", error="Merci de fournir un fichier .csv valide."))
@@ -273,6 +283,7 @@ def products_page():
         active_page="products",
         blob_theme="neutral",
         produits=produits,
+        idempotency_key_product=str(uuid.uuid4()),
         message=request.args.get("message"),
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
@@ -282,6 +293,10 @@ def products_page():
 @web_bp.route("/app/products/create", methods=["POST"])
 @login_required_web
 def create_product():
+    user_id = session["user_id"]
+    idempotency_key = request.form.get("idempotency_key")
+    if not _idempotent(idempotency_key, user_id, "create_product"):
+        return redirect(url_for("web.products_page", message="Ce produit a déjà été créé (double soumission ignorée)."))
     service = get_product_service()
     try:
         service.create(

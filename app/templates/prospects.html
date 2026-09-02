@@ -77,7 +77,7 @@
 <div id="modal-add-prospect" class="hidden fixed inset-0 bg-on-surface/40 z-50 flex items-center justify-center p-4">
     <div class="bg-surface-container-lowest rounded-xl shadow-lg max-w-md w-full p-6">
         <h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Ajouter un prospect</h3>
-        <form method="POST" action="{{ url_for('web.create_prospect') }}" class="space-y-3">
+        <form method="POST" action="{{ url_for('web.create_prospect') }}" class="space-y-3"><input type="hidden" name="idempotency_key" value="{{ idempotency_key_prospect }}"/>
             <input required class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="company_name" placeholder="Nom de l'entreprise" type="text"/>
             <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="email" placeholder="Email" type="email"/>
             <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="whatsapp_number" placeholder="Numéro WhatsApp (+237...)" type="text"/>
@@ -94,7 +94,7 @@
 <div id="modal-import-csv" class="hidden fixed inset-0 bg-on-surface/40 z-50 flex items-center justify-center p-4">
     <div class="bg-surface-container-lowest rounded-xl shadow-lg max-w-md w-full p-6">
         <h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Importer un fichier CSV</h3>
-        <form method="POST" action="{{ url_for('web.import_csv') }}" enctype="multipart/form-data" class="space-y-3">
+        <form method="POST" action="{{ url_for('web.import_csv') }}" enctype="multipart/form-data" class="space-y-3"><input type="hidden" name="idempotency_key" value="{{ idempotency_key_csv }}"/>
             <input required class="w-full text-body-md" name="fichier" type="file" accept=".csv"/>
             <p class="text-secondary text-body-sm">Colonnes attendues : company_name, email, whatsapp_number.</p>
             <div class="flex justify-end gap-2 pt-2">
