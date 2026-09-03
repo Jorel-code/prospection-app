@@ -56,13 +56,16 @@ def create_app():
     @app.errorhandler(500)
     def erreur_serveur(e):
         return render_template("erreur.html", code=500, message="Une erreur interne est survenue."), 500
-
-    with app.app_context():
-        jobs_orphelins = ScrapingJob.query.filter(ScrapingJob.status.in_(["pending", "running"])).all()
-        for job in jobs_orphelins:
-            job.status = "failed"
-            job.finished_at = datetime.utcnow()
-        if jobs_orphelins:
-            db.session.commit()
-            print(f"[Startup] {len(jobs_orphelins)} job(s) orphelin(s) marqué(s) comme échoués.")
+    
+    import os
+    if os.environ.get("TESTING") != "1":
+        with app.app_context():
+            jobs_orphelins = ScrapingJob.query.filter(ScrapingJob.status.in_(["pending", "running"])).all()
+            for job in jobs_orphelins:
+                job.status = "failed"
+                job.finished_at = datetime.utcnow()
+            if jobs_orphelins:
+                db.session.commit()
+                print(f"[Startup] {len(jobs_orphelins)} job(s) orphelin(s) marqué(s) comme échoués.")
+    
     return app

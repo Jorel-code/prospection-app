@@ -125,3 +125,174 @@
 2026-09-03 00:07:18,085 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 00:07:18] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
 2026-09-03 00:07:18,108 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 00:07:18] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
 2026-09-03 00:07:18,141 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 00:07:18] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:17:15,008 [INFO] werkzeug - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-09-03 09:17:15,008 [INFO] werkzeug - [33mPress CTRL+C to quit[0m
+2026-09-03 09:17:15,028 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:17:20,108 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:17:20,179 [INFO] werkzeug -  * Debugger PIN: 908-036-731
+2026-09-03 09:17:50,599 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:17:50] "[32mGET / HTTP/1.1[0m" 302 -
+2026-09-03 09:17:50,704 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:17:50] "GET /login HTTP/1.1" 200 -
+2026-09-03 09:17:53,817 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:17:53] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:17:53,950 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:17:53] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:17:57,332 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:17:57] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-09-03 09:18:06,018 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:06] "[32mPOST /login HTTP/1.1[0m" 302 -
+2026-09-03 09:18:06,191 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:06] "GET /dashboard HTTP/1.1" 200 -
+2026-09-03 09:18:06,247 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:06] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:18:06,250 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:06] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:06,353 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:06] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:14,485 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:14] "GET /app/campaigns HTTP/1.1" 200 -
+2026-09-03 09:18:14,520 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:14] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:14,550 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:14] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:18:14,561 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:14] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:17,480 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:17] "GET /app/scraping HTTP/1.1" 200 -
+2026-09-03 09:18:17,549 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:17] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:17,557 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:17] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:18:17,829 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:17] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:57,756 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:57] "[32mPOST /app/scraping/launch HTTP/1.1[0m" 302 -
+2026-09-03 09:18:57,829 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:57] "GET /app/scraping?job_id=23 HTTP/1.1" 200 -
+2026-09-03 09:18:57,904 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:57] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:57,906 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:57] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:18:57,942 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:57] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:18:58,239 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:58] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:18:58,287 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:18:58] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:01,365 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:01] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:01,369 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:01] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:01,717 [INFO] app.integrations.scrapers.overpass_scraper - 'Buéa' géocodé -> lat=4.1567895, lon=9.2315915
+2026-09-03 09:19:01,725 [INFO] app.integrations.scrapers.overpass_scraper - Secteur 'BTP' -> correspondance exacte 'btp' -> 3 filtre(s) ciblé(s)
+2026-09-03 09:19:04,383 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:04] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:04,396 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:04] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:07,427 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:07] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:07,427 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:07] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:10,437 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:10] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:10,463 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:10] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:13,459 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:13] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:13,487 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:13] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:13,561 [INFO] app.integrations.scrapers.overpass_scraper - https://overpass-api.de/api/interpreter -> status_code=504
+2026-09-03 09:19:16,495 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:16] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:16,516 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:16] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:19,512 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:19] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:19,544 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:19] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:22,518 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:22] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:22,561 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:22] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:25,582 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:25] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:25,582 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:25] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:28,630 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:28] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:28,630 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:28] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:31,666 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:31] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:31,678 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:31] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:34,694 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:34] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:34,722 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:34] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:37,724 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:37] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:37,754 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:37] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:39,061 [INFO] app.integrations.scrapers.overpass_scraper - https://overpass.kumi.systems/api/interpreter -> status_code=200
+2026-09-03 09:19:39,070 [INFO] app.integrations.scrapers.overpass_scraper - 34 éléments bruts reçus depuis https://overpass.kumi.systems/api/interpreter
+2026-09-03 09:19:40,748 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:40] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:40,793 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:40] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:43,757 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:43] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:43,812 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:43] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:46,771 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:46] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:46,836 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:46] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:49,483 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Express construction': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Max retries exceeded with url: /html/?q=Express+construction+Bu%C3%A9a+site+officiel (Caused by ConnectTimeoutError(<HTTPSConnection(host='html.duckduckgo.com', port=443) at 0x1b338f47580>, 'Connection to html.duckduckgo.com timed out. (connect timeout=10)'))
+2026-09-03 09:19:49,786 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:49] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:49,858 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:49] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:52,803 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:52] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:52,869 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:52] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:55,812 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:55] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:55,904 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:55] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:58,832 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:58] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:19:58,911 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:19:58] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:01,845 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:01] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:01,858 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Point final': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Max retries exceeded with url: /html/?q=Point+final+Bu%C3%A9a+site+officiel (Caused by ConnectTimeoutError(<HTTPSConnection(host='html.duckduckgo.com', port=443) at 0x1b338f6d730>, 'Connection to html.duckduckgo.com timed out. (connect timeout=10)'))
+2026-09-03 09:20:01,945 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:01] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:04,866 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:04] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:04,957 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:04] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:07,871 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:07] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:07,977 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:07] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:10,895 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:10] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:10,987 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:10] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:13,907 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:13] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:14,004 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:14] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:14,967 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Global construction': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Max retries exceeded with url: /html/?q=Global+construction+Bu%C3%A9a+site+officiel (Caused by ConnectTimeoutError(<HTTPSConnection(host='html.duckduckgo.com', port=443) at 0x1b338f8a700>, 'Connection to html.duckduckgo.com timed out. (connect timeout=10)'))
+2026-09-03 09:20:16,919 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:16] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:17,018 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:17] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:19,930 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:19] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:20,033 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:20] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:22,949 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:22] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:23,046 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:23] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:25,983 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:25] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:26,078 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:26] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:29,011 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:29] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:29,108 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:29] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:32,017 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:32] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:32,167 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:32] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:33,239 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Cogeni': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Read timed out. (read timeout=10)
+2026-09-03 09:20:35,045 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:35] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:35,196 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:35] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:38,055 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:38] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:38,212 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:38] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:41,066 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:41] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:41,219 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:41] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:44,084 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:44] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:44,240 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:44] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:45,080 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Quifferou': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Max retries exceeded with url: /html/?q=Quifferou+Bu%C3%A9a+site+officiel (Caused by ConnectTimeoutError(<HTTPSConnection(host='html.duckduckgo.com', port=443) at 0x1b338f13340>, 'Connection to html.duckduckgo.com timed out. (connect timeout=10)'))
+2026-09-03 09:20:47,100 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:47] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:47,256 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:47] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:50,110 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:50] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:50,270 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:50] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:53,127 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:53] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:53,286 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:53] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:56,146 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:56] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:56,300 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:56] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:56,706 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'My Own Man store': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Max retries exceeded with url: /html/?q=My+Own+Man+store+Bu%C3%A9a+site+officiel (Caused by ConnectTimeoutError(<HTTPSConnection(host='html.duckduckgo.com', port=443) at 0x1b338f66580>, 'Connection to html.duckduckgo.com timed out. (connect timeout=10)'))
+2026-09-03 09:20:59,154 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:59] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:20:59,315 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:20:59] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:02,195 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:02] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:02,330 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:02] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:05,205 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:05] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:05,341 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:05] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:08,265 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:08] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:08,400 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:08] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:11,355 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:11] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:11,447 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:11] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:14,389 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:14] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:14,472 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:14] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:14,978 [WARNING] app.integrations.scrapers.overpass_scraper - DuckDuckGo échec pour 'Univers construction': HTTPSConnectionPool(host='html.duckduckgo.com', port=443): Read timed out. (read timeout=10)
+2026-09-03 09:21:17,396 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:17] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:17,500 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:17] "GET /app/scraping/status/23 HTTP/1.1" 200 -
+2026-09-03 09:21:18,684 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:18] "GET /app/scraping HTTP/1.1" 200 -
+2026-09-03 09:21:18,854 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:18] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:21:18,862 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:18] "GET /app/scraping HTTP/1.1" 200 -
+2026-09-03 09:21:18,910 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:18] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:21:19,007 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:19] "GET /static/js/tailwind-config.js HTTP/1.1" 200 -
+2026-09-03 09:21:19,014 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:19] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:21:19,019 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:19] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:21:19,095 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:19] "GET /static/js/motion.js HTTP/1.1" 200 -
+2026-09-03 09:21:29,202 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:29] "GET /app/prospects HTTP/1.1" 200 -
+2026-09-03 09:21:29,272 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:29] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:21:29,335 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:29] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:21:29,377 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:21:29] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:22:04,729 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:22:04] "GET /app/scraping HTTP/1.1" 200 -
+2026-09-03 09:22:04,786 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:22:04] "[36mGET /static/js/tailwind-config.js HTTP/1.1[0m" 304 -
+2026-09-03 09:22:04,814 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:22:04] "[36mGET /static/css/theme.css HTTP/1.1[0m" 304 -
+2026-09-03 09:22:04,838 [INFO] werkzeug - 127.0.0.1 - - [03/Sep/2026 09:22:04] "[36mGET /static/js/motion.js HTTP/1.1[0m" 304 -
+2026-09-03 09:36:27,648 [INFO] werkzeug -  * Detected change in 'C:\\Users\\SAS\\Desktop\\prospection-app\\app\\__init__.py', reloading
+2026-09-03 09:36:27,964 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:36:52,898 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:36:52,957 [INFO] werkzeug -  * Debugger PIN: 908-036-731
+2026-09-03 09:37:50,077 [INFO] werkzeug -  * Detected change in 'C:\\Users\\SAS\\Desktop\\prospection-app\\tests\\conftest.py', reloading
+2026-09-03 09:37:50,349 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:37:55,044 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:37:55,100 [INFO] werkzeug -  * Debugger PIN: 908-036-731
+2026-09-03 09:39:19,890 [INFO] werkzeug -  * Detected change in 'C:\\Users\\SAS\\Desktop\\prospection-app\\tests\\test_prospect_service.py', reloading
+2026-09-03 09:39:20,226 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:39:24,815 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:39:24,869 [INFO] werkzeug -  * Debugger PIN: 908-036-731
+2026-09-03 09:39:35,546 [INFO] werkzeug -  * Detected change in 'C:\\Users\\SAS\\Desktop\\prospection-app\\tests\\test_scraping_service.py', reloading
+2026-09-03 09:39:35,780 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:39:41,138 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:39:41,210 [INFO] werkzeug -  * Debugger PIN: 908-036-731
+2026-09-03 09:40:26,235 [INFO] werkzeug -  * Detected change in 'C:\\Users\\SAS\\Desktop\\prospection-app\\tests\\test_campaign_service.py', reloading
+2026-09-03 09:40:26,536 [INFO] werkzeug -  * Restarting with stat
+2026-09-03 09:40:31,515 [WARNING] werkzeug -  * Debugger is active!
+2026-09-03 09:40:31,591 [INFO] werkzeug -  * Debugger PIN: 908-036-731
