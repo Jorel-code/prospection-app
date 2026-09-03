@@ -1,5 +1,7 @@
 from datetime import datetime
 from app.extensions import db
+import logging
+logger = logging.getLogger(__name__)
 
 class ScrapingService:
     def __init__(self, scraper_engine, contact_validator, prospect_repository):
@@ -72,4 +74,4 @@ class ScrapingService:
             job.finished_at = datetime.utcnow()
             job.error_detail = str(e)
             db.session.commit()
-            print(f"[ScrapingService] Job {job_id} a échoué : {e}")
+            logger.error(f"Job {job_id} a échoué : {e}", exc_info=True)

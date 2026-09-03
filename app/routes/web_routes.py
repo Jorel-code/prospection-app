@@ -148,6 +148,7 @@ def _idempotent(key, user_id, endpoint):
 
 @web_bp.route("/dashboard")
 @login_required_web
+@gestion_erreurs_web("web.login")
 def dashboard_page():
     user_id = session["user_id"]
 
@@ -236,6 +237,7 @@ def _email(user_id):
 
 @web_bp.route("/app/prospects")
 @login_required_web
+@gestion_erreurs_web("web.dashboard_page")
 def prospects_page():
     user_id = session["user_id"]
     prospects = Prospect.query.filter_by(user_id=user_id).order_by(Prospect.created_at.desc()).all()
@@ -282,14 +284,18 @@ def import_csv():
     idempotency_key = request.form.get("idempotency_key")
     if not _idempotent(idempotency_key, user_id, "import_csv"):
         return redirect(url_for("web.prospects_page", message="Cet import a déjà été traité (double soumission ignorée)."))
+
     fichier = request.files.get("fichier")
     if not fichier or not fichier.filename.endswith(".csv"):
         return redirect(url_for("web.prospects_page", error="Merci de fournir un fichier .csv valide."))
 
     service = get_prospect_service()
-    resultats = service.import_csv(user_id=session["user_id"], fichier_csv=fichier)
-    message = f"{resultats['importes']} importés, {resultats['rejetes']} rejetés, {resultats['doublons']} doublons."
-    return redirect(url_for("web.prospects_page", message=message))
+    try:
+        resultats = service.import_csv(user_id=user_id, fichier_csv=fichier)
+        message = f"{resultats['importes']} importés, {resultats['rejetes']} rejetés, {resultats['doublons']} doublons."
+        return redirect(url_for("web.prospects_page", message=message))
+    except ValueError as e:
+        return redirect(url_for("web.prospects_page", error=str(e)))
 
 
 # ---------------------------------------------------------------------------
@@ -298,6 +304,7 @@ def import_csv():
 
 @web_bp.route("/app/products")
 @login_required_web
+@gestion_erreurs_web("web.dashboard_page")
 def products_page():
     user_id = session["user_id"]
     produits = Product.query.filter_by(user_id=user_id).order_by(Product.created_at.desc()).all()
@@ -341,6 +348,7 @@ def create_product():
 
 @web_bp.route("/app/scraping")
 @login_required_web
+@gestion_erreurs_web("web.dashboard_page")
 def scraping_page():
     user_id = session["user_id"]
     scraping_jobs = ScrapingJob.query.filter_by(user_id=user_id).order_by(ScrapingJob.created_at.desc()).all()
@@ -436,6 +444,7 @@ def scraping_job_status(job_id):
 
 @web_bp.route("/app/campaigns")
 @login_required_web
+@gestion_erreurs_web("web.dashboard_page")
 def campaigns_page():
     user_id = session["user_id"]
     prospects_verifies = Prospect.query.filter_by(user_id=user_id, status="verified").all()
@@ -527,6 +536,7 @@ def launch_campaign():
 
 @web_bp.route("/app/integrations")
 @login_required_web
+@gestion_erreurs_web("web.dashboard_page")
 def integrations_page():
     import os
     user_id = session["user_id"]

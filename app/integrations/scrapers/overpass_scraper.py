@@ -1,14 +1,27 @@
 import re
 import time
 import random
+import logging
+import unicodedata
 import requests
 from bs4 import BeautifulSoup
 from app.interfaces.scraper_engine_interface import IScraperEngine
 from app.integrations.scrapers.dto import ScrapedProspect
 
+logger = logging.getLogger(__name__)
+
 EMAIL_REGEX = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
 PHONE_REGEX = re.compile(r"\+?\d[\d\s\-\(\)]{7,}\d")
 CHEMINS_CONTACT = ["", "/contact", "/contact-us", "/contactez-nous", "/a-propos", "/about"]
+
+
+def _normaliser_texte(texte):
+    """Retire accents/casse pour un matching tolérant ('Informatique', 'informatiques', 'Café' -> comparables)."""
+    if not texte:
+        return ""
+    texte = texte.strip().lower()
+    texte = unicodedata.normalize("NFD", texte)
+    return "".join(c for c in texte if unicodedata.category(c) != "Mn")
 
 
 class OverpassScraper(IScraperEngine):
@@ -24,6 +37,56 @@ class OverpassScraper(IScraperEngine):
         "https://overpass-api.de/api/interpreter",
         "https://overpass.kumi.systems/api/interpreter",
     ]
+
+    # Mapping élargi : chaque secteur a plusieurs synonymes/variantes possibles.
+    # Toutes les clés sont déjà normalisées (sans accent, en minuscule).
+    MAPPING_SECTEURS = {
+        "informatique": ['shop="computer"', 'shop="electronics"', 'office="it"'],
+        "info": ['shop="computer"', 'shop="electronics"', 'office="it"'],
+        "tech": ['shop="computer"', 'shop="electronics"', 'office="it"'],
+        "numerique": ['shop="computer"', 'shop="electronics"', 'office="it"'],
+
+        "restauration": ['amenity="restaurant"', 'amenity="cafe"', 'amenity="fast_food"'],
+        "restaurant": ['amenity="restaurant"', 'amenity="cafe"', 'amenity="fast_food"'],
+        "alimentation": ['shop="supermarket"', 'shop="grocery"', 'shop="convenience"'],
+        "hotellerie": ['tourism="hotel"', 'tourism="guest_house"'],
+        "hotel": ['tourism="hotel"', 'tourism="guest_house"'],
+
+        "sante": ['amenity="pharmacy"', 'amenity="clinic"', 'amenity="hospital"'],
+        "medical": ['amenity="pharmacy"', 'amenity="clinic"', 'amenity="hospital"'],
+        "pharmacie": ['amenity="pharmacy"'],
+
+        "finance": ['amenity="bank"', 'office="financial"', 'office="insurance"'],
+        "banque": ['amenity="bank"'],
+        "assurance": ['office="insurance"'],
+
+        "btp": ['shop="hardware"', 'craft="builder"', 'office="construction"'],
+        "construction": ['shop="hardware"', 'craft="builder"', 'office="construction"'],
+        "batiment": ['shop="hardware"', 'craft="builder"', 'office="construction"'],
+
+        "education": ['amenity="school"', 'amenity="university"', 'amenity="college"'],
+        "ecole": ['amenity="school"'],
+        "universite": ['amenity="university"'],
+
+        "commerce": ['shop="clothes"', 'shop="general"', 'shop="department_store"'],
+        "mode": ['shop="clothes"', 'shop="shoes"', 'shop="boutique"'],
+        "textile": ['shop="clothes"', 'shop="fabric"'],
+
+        "automobile": ['shop="car"', 'shop="car_repair"', 'shop="car_parts"'],
+        "auto": ['shop="car"', 'shop="car_repair"', 'shop="car_parts"'],
+
+        "immobilier": ['office="estate_agent"'],
+
+        "agriculture": ['shop="farm"', 'shop="agrarian"'],
+
+        "transport": ['amenity="taxi"', 'shop="car_rental"', 'office="logistics"'],
+        "logistique": ['office="logistics"', 'shop="car_rental"'],
+
+        "beaute": ['shop="hairdresser"', 'shop="beauty"', 'shop="cosmetics"'],
+        "coiffure": ['shop="hairdresser"'],
+
+        "artisanat": ['craft="carpenter"', 'craft="tailor"', 'shop="craft"'],
+    }
 
     def scrape(self, sector: str, location: str, keywords: str = None) -> list:
         entreprises_osm = self._interroger_overpass(sector, location) or []
@@ -53,8 +116,25 @@ class OverpassScraper(IScraperEngine):
     # ------------------------------------------------------------------
     # Étage 1 : OpenStreetMap Overpass API
     # ------------------------------------------------------------------
+    def _trouver_filtres_secteur(self, sector):
+        """Cherche une correspondance tolérante (accents/casse/sous-chaîne)
+        avant de retomber sur une recherche générique."""
+        secteur_normalise = _normaliser_texte(sector)
+        if not secteur_normalise:
+            return None, "aucun secteur renseigné"
+
+        # 1. Correspondance exacte
+        if secteur_normalise in self.MAPPING_SECTEURS:
+            return self.MAPPING_SECTEURS[secteur_normalise], f"correspondance exacte '{secteur_normalise}'"
+
+        # 2. Correspondance partielle (le mot tapé contient une clé connue, ou l'inverse)
+        for cle, filtres in self.MAPPING_SECTEURS.items():
+            if cle in secteur_normalise or secteur_normalise in cle:
+                return filtres, f"correspondance partielle '{secteur_normalise}' ~ '{cle}'"
+
+        return None, f"'{secteur_normalise}' non reconnu"
+
     def _geocoder_location(self, location):
-        """Convertit un nom de lieu ('Douala') en coordonnées GPS via Nominatim."""
         try:
             response = requests.get(
                 "https://nominatim.openstreetmap.org/search",
@@ -64,23 +144,14 @@ class OverpassScraper(IScraperEngine):
             )
             resultats = response.json()
             if not resultats:
-                print(f"[OverpassScraper] Nominatim: aucun résultat pour '{location}'")
+                logger.warning(f"Nominatim: aucun résultat pour '{location}'")
                 return None
             lat, lon = float(resultats[0]["lat"]), float(resultats[0]["lon"])
-            print(f"[OverpassScraper] '{location}' géocodé -> lat={lat}, lon={lon}")
+            logger.info(f"'{location}' géocodé -> lat={lat}, lon={lon}")
             return lat, lon
         except Exception as e:
-            print(f"[OverpassScraper] ERREUR géocodage : {e}")
+            logger.error(f"Erreur géocodage pour '{location}': {e}", exc_info=True)
             return None
-
-    MAPPING_SECTEURS = {
-        "informatique": ['shop="computer"', 'shop="electronics"', 'office="it"'],
-        "restauration": ['amenity="restaurant"', 'amenity="cafe"', 'amenity="fast_food"'],
-        "sante": ['amenity="pharmacy"', 'amenity="clinic"', 'amenity="hospital"'],
-        "finance": ['amenity="bank"', 'office="financial"', 'office="insurance"'],
-        "btp": ['shop="hardware"', 'craft="builder"', 'office="construction"'],
-        "education": ['amenity="school"', 'amenity="university"', 'amenity="college"'],
-    }
 
     def _interroger_overpass(self, sector, location):
         coords = self._geocoder_location(location)
@@ -88,16 +159,19 @@ class OverpassScraper(IScraperEngine):
             return []
         lat, lon = coords
 
-        secteur_normalise = (sector or "").strip().lower()
-        filtres = self.MAPPING_SECTEURS.get(secteur_normalise)
+        filtres, raison = self._trouver_filtres_secteur(sector)
 
         if filtres:
             clauses = "\n".join(f'  node[{f}](around:15000,{lat},{lon});' for f in filtres)
-            print(f"[OverpassScraper] Secteur reconnu '{secteur_normalise}' -> {len(filtres)} filtre(s) ciblé(s)")
+            logger.info(f"Secteur '{sector}' -> {raison} -> {len(filtres)} filtre(s) ciblé(s)")
         else:
+            # Recherche générale élargie : mieux qu'un simple shop+office pour
+            # maximiser les chances de trouver quelque chose de pertinent
+            # même sur un secteur totalement inconnu du mapping.
             clauses = f"""  node["shop"](around:15000,{lat},{lon});
-  node["office"](around:15000,{lat},{lon});"""
-            print(f"[OverpassScraper] Secteur '{secteur_normalise}' non reconnu -> recherche générale (shop+office)")
+  node["office"](around:15000,{lat},{lon});
+  node["craft"](around:15000,{lat},{lon});"""
+            logger.warning(f"Secteur '{sector}' -> {raison} -> recherche générale élargie (shop+office+craft)")
 
         requete = f"""
         [out:json][timeout:60];
@@ -110,21 +184,25 @@ class OverpassScraper(IScraperEngine):
         for url in self.URLS_OVERPASS:
             try:
                 response = requests.post(url, data={"data": requete}, headers=self.HEADERS, timeout=70)
-                print(f"[OverpassScraper] {url} -> status_code={response.status_code}")
+                logger.info(f"{url} -> status_code={response.status_code}")
+
                 if response.status_code != 200:
                     continue
+
                 data = response.json()
                 elements = data.get("elements", [])
-                print(f"[OverpassScraper] {len(elements)} éléments bruts reçus")
+                logger.info(f"{len(elements)} éléments bruts reçus depuis {url}")
+
                 if elements:
                     return self._parser_elements(elements)
+
             except Exception as e:
-                print(f"[OverpassScraper] ERREUR sur {url} : {e}")
+                logger.error(f"Erreur sur {url} : {e}", exc_info=True)
                 continue
 
-        print("[OverpassScraper] Tous les serveurs Overpass ont échoué.")
+        logger.error("Tous les serveurs Overpass ont échoué.")
         return []
-        
+
     def _parser_elements(self, elements):
         entreprises = []
         for element in elements:
@@ -155,7 +233,7 @@ class OverpassScraper(IScraperEngine):
             if premier_lien and premier_lien.get("href"):
                 return premier_lien["href"]
         except Exception as e:
-            print(f"[OverpassScraper] DuckDuckGo échec pour '{nom_entreprise}': {e}")
+            logger.warning(f"DuckDuckGo échec pour '{nom_entreprise}': {e}")
         return None
 
     # ------------------------------------------------------------------
