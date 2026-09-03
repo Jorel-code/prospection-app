@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
+from flask_smorest import Blueprint
 from flask_jwt_extended import create_access_token
 from app.container import get_auth_service
 from app.extensions import limiter

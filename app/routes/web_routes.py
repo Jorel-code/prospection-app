@@ -175,6 +175,8 @@ def dashboard_page():
     ).filter(Prospect.user_id == user_id).group_by(Prospect.status).all()
     repartition_par_statut = dict(par_statut_rows)
 
+    dernieres_campagnes = Campaign.query.filter_by(user_id=user_id).order_by(Campaign.created_at.desc()).limit(5).all()
+
     stats = {
         "total_prospects": total_prospects,
         "nb_campagnes": nb_campagnes,
@@ -218,6 +220,7 @@ def dashboard_page():
         activites_recentes=activites[:5],
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
+        dernieres_campagnes=dernieres_campagnes
     )
 
 
@@ -274,6 +277,19 @@ def create_prospect():
         return redirect(url_for("web.prospects_page", message="Prospect créé avec succès."))
     except ValueError as e:
         return redirect(url_for("web.prospects_page", error=str(e)))
+
+@web_bp.route("/app/prospects/<int:prospect_id>/delete")
+@login_required_web
+@gestion_erreurs_web("web.prospects_page")
+def delete_prospect(prospect_id):
+    user_id = session["user_id"]
+    prospect = Prospect.query.filter_by(id=prospect_id, user_id=user_id).first()
+    if not prospect:
+        return redirect(url_for("web.prospects_page", error="Prospect introuvable."))
+
+    db.session.delete(prospect)
+    db.session.commit()
+    return redirect(url_for("web.prospects_page", message="Prospect supprimé."))
 
 
 @web_bp.route("/app/prospects/import-csv", methods=["POST"])
@@ -449,7 +465,7 @@ def campaigns_page():
     user_id = session["user_id"]
     prospects_verifies = Prospect.query.filter_by(user_id=user_id, status="verified").all()
     produits = Product.query.filter_by(user_id=user_id).all()
-
+    historique_campagnes = Campaign.query.filter_by(user_id=user_id).order_by(Campaign.created_at.desc()).limit(10).all()
     return render_template(
         "campaigns.html",
         active_page="campaigns",
@@ -463,6 +479,7 @@ def campaigns_page():
         idempotency_key=str(uuid.uuid4()),
         current_user_username=_username(user_id),
         current_user_email=_email(user_id),
+        historique_campagnes=historique_campagnes,
     )
 
 
@@ -522,12 +539,27 @@ def launch_campaign():
         resultat = service.launch(
             user_id=user_id, product_id=int(product_id),
             prospect_ids=prospect_ids, channel=channel,
-            name=f"Campagne du {datetime.utcnow().strftime('%d/%m/%Y %H:%M')}",
+            name = request.form.get("campaign_name", "").strip() or f"Campagne du {datetime.utcnow().strftime('%d/%m/%Y %H:%M')}",
         )
         message = f"Campagne lancée : {resultat['envoyes']} envoyé(s), {resultat['echecs']} échec(s)."
         return redirect(url_for("web.campaigns_page", message=message))
     except Exception as e:
         return redirect(url_for("web.campaigns_page", error=f"Erreur lors du lancement : {e}"))
+
+
+@web_bp.route("/app/campaigns/<int:campaign_id>/delete")
+@login_required_web
+@gestion_erreurs_web("web.campaigns_page")
+def delete_campaign(campaign_id):
+    user_id = session["user_id"]
+    campaign = Campaign.query.filter_by(id=campaign_id, user_id=user_id).first()
+    if not campaign:
+        return redirect(url_for("web.campaigns_page", error="Campagne introuvable."))
+
+    CampaignMessage.query.filter_by(campaign_id=campaign.id).delete()
+    db.session.delete(campaign)
+    db.session.commit()
+    return redirect(url_for("web.campaigns_page", message="Campagne supprimée."))
 
 
 # ---------------------------------------------------------------------------

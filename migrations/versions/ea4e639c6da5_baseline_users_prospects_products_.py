@@ -1,8 +1,8 @@
 """baseline: users, prospects, products, scraping_jobs, campaigns, campaign_messages
 
-Revision ID: 90286061288c
+Revision ID: ea4e639c6da5
 Revises: 
-Create Date: 2026-08-25 11:14:52.808593
+Create Date: 2026-09-03 12:55:26.787433
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '90286061288c'
+revision: str = 'ea4e639c6da5'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,6 +25,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=80), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
@@ -52,6 +53,7 @@ def upgrade() -> None:
     sa.Column('results_count', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=True),
     sa.Column('finished_at', sa.DateTime(), nullable=True),
+    sa.Column('error_detail', sa.Text(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

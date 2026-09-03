@@ -1,5 +1,6 @@
 import threading
-from flask import Blueprint, request, jsonify, current_app
+from flask import request, jsonify, current_app
+from flask_smorest import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.container import get_scraping_service
 from app.models.scraping_job import ScrapingJob

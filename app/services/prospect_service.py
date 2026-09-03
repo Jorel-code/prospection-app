@@ -25,14 +25,16 @@ class ProspectService:
 
         try:
             return self.prospect_repository.save(prospect)
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
-            if email:
+            message_erreur = str(e).lower()
+
+            if "email" in message_erreur:
                 raise ValueError(f"Un prospect existe déjà avec l'email '{email}'.")
-            if whatsapp_normalise:
+            if "whatsapp" in message_erreur:
                 raise ValueError(f"Un prospect existe déjà avec le numéro '{whatsapp_normalise}'.")
             raise ValueError("Un prospect avec ces coordonnées existe déjà.")
-
+            
     def create_bulk(self, user_id, lignes, source="manual"):
         resultats = {"crees": 0, "erreurs": []}
         for i, ligne in enumerate(lignes):

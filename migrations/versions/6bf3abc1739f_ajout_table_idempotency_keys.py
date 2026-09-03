@@ -1,8 +1,8 @@
 """ajout table idempotency_keys
 
-Revision ID: f20cae59a4c4
-Revises: 2355b7ae8fd1
-Create Date: 2026-09-01 23:49:03.245947
+Revision ID: 6bf3abc1739f
+Revises: d5b74f6b3280
+Create Date: 2026-09-03 13:22:34.378061
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f20cae59a4c4'
-down_revision: Union[str, Sequence[str], None] = '2355b7ae8fd1'
+revision: str = '6bf3abc1739f'
+down_revision: Union[str, Sequence[str], None] = 'd5b74f6b3280'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

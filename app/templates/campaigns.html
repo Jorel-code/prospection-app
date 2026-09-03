@@ -19,17 +19,25 @@
 <div class="grid grid-cols-12 gap-gutter">
     <!-- Colonne gauche : configuration -->
     <div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
-        <form method="POST" action="{{ url_for('web.launch_campaign') }}"><input type="hidden" name="idempotency_key" value="{{ idempotency_key }}"/>
+        <form method="POST" action="{{ url_for('web.launch_campaign') }}">
         <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding mb-gutter">
             <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
-                <span class="material-symbols-outlined text-primary">groups</span>
+                <span class="material-symbols-outlined text-primary flex-shrink-0">label</span>
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">Nom de la campagne</h3>
+            </div>
+            <input class="w-full h-10 border border-outline-variant rounded px-3 text-body-md focus:border-primary focus:ring-2 focus:ring-inverse-primary focus:outline-none" name="campaign_name" placeholder="ex: Relance printemps 2026" type="text"/>
+        </section>
+
+        <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding mb-gutter">
+            <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
+                <span class="material-symbols-outlined text-primary flex-shrink-0">groups</span>
                 <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 1 : Sélectionner les prospects</h3>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-64 overflow-y-auto">
                 {% for p in prospects_verifies %}
-                <label class="relative flex items-center gap-2 p-3 border border-outline-variant rounded cursor-pointer hover:bg-surface-container-low hover:border-primary-container transition-colors">
-                    <input class="text-primary-container focus:ring-primary-container" name="prospect_ids" type="checkbox" value="{{ p.id }}"/>
-                    <span class="font-label-bold text-label-bold text-on-surface">{{ p.company_name }}</span>
+                <label class="relative flex items-center gap-2 p-3 border border-outline-variant rounded cursor-pointer hover:bg-surface-container-low hover:border-primary-container transition-colors min-w-0">
+                    <input class="text-primary-container focus:ring-primary-container flex-shrink-0" name="prospect_ids" type="checkbox" value="{{ p.id }}"/>
+                    <span class="font-label-bold text-label-bold text-on-surface truncate" title="{{ p.company_name }}">{{ p.company_name }}</span>
                 </label>
                 {% else %}
                 <p class="text-secondary text-body-sm col-span-2">Aucun prospect vérifié disponible — vérifiez vos prospects avant de lancer une campagne.</p>
@@ -40,10 +48,10 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter">
             <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding">
                 <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
-                    <span class="material-symbols-outlined text-primary">inventory_2</span>
+                    <span class="material-symbols-outlined text-primary flex-shrink-0">inventory_2</span>
                     <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 2 : Produit</h3>
                 </div>
-                <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-10 px-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-inverse-primary outline-none">
+                <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-10 px-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-inverse-primary outline-none truncate">
                     {% for produit in produits %}
                     <option value="{{ produit.id }}">{{ produit.name }}</option>
                     {% else %}
@@ -54,16 +62,16 @@
 
             <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded p-container-padding">
                 <div class="flex items-center gap-2 mb-stack-md border-b border-outline-variant pb-stack-sm">
-                    <span class="material-symbols-outlined text-primary">forum</span>
+                    <span class="material-symbols-outlined text-primary flex-shrink-0">forum</span>
                     <h3 class="font-headline-sm text-headline-sm text-on-surface">Étape 3 : Canal</h3>
                 </div>
                 <div class="flex flex-col gap-2">
                     <label class="flex items-center gap-3 p-2 border border-primary-container bg-surface-container-low rounded cursor-pointer">
-                        <input checked class="text-primary-container focus:ring-primary-container" name="channel" type="radio" value="email"/>
+                        <input checked class="text-primary-container focus:ring-primary-container flex-shrink-0" name="channel" type="radio" value="email"/>
                         <span class="font-mono-data text-mono-data text-on-surface">Email (SMTP)</span>
                     </label>
                     <label class="flex items-center gap-3 p-2 border border-outline-variant rounded cursor-pointer hover:bg-surface-container-low transition-colors">
-                        <input class="text-primary-container focus:ring-primary-container" name="channel" type="radio" value="whatsapp"/>
+                        <input class="text-primary-container focus:ring-primary-container flex-shrink-0" name="channel" type="radio" value="whatsapp"/>
                         <span class="font-mono-data text-mono-data text-on-surface">WhatsApp Business</span>
                     </label>
                 </div>
@@ -71,8 +79,8 @@
         </div>
 
         <div class="flex justify-end mt-gutter">
-            <button type="submit" class="bg-primary-container text-on-primary-container font-label-bold text-label-bold h-10 px-6 rounded flex items-center gap-2 hover:bg-surface-tint hover:text-on-primary transition-colors shadow-sm">
-                <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+            <button type="submit" class="bg-primary-container text-on-primary-container font-label-bold text-label-bold h-10 px-6 rounded flex items-center gap-2 hover:bg-surface-tint hover:text-on-primary transition-colors shadow-sm whitespace-nowrap">
+                <span class="material-symbols-outlined text-[18px] flex-shrink-0">rocket_launch</span>
                 Lancer la campagne
             </button>
         </div>
@@ -83,19 +91,19 @@
     <div class="col-span-12 lg:col-span-4 flex flex-col">
         <section class="reveal-on-scroll bg-surface-container-lowest border border-outline-variant rounded flex-1 flex flex-col shadow-sm">
             <div class="p-4 border-b border-outline-variant bg-surface-container-low rounded-t flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary">visibility</span>
-                    <h3 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider">Aperçu généré</h3>
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="material-symbols-outlined text-primary flex-shrink-0">visibility</span>
+                    <h3 class="font-label-bold text-label-bold text-on-surface uppercase tracking-wider truncate">Aperçu généré</h3>
                 </div>
             </div>
             <div class="p-container-padding flex-1">
                 <form method="POST" action="{{ url_for('web.preview_message') }}" class="space-y-2 mb-4">
-                    <select name="prospect_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm">
+                    <select name="prospect_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm truncate">
                         {% for p in prospects_verifies %}
                         <option value="{{ p.id }}">{{ p.company_name }}</option>
                         {% endfor %}
                     </select>
-                    <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm">
+                    <select name="product_id" class="w-full bg-surface border border-outline-variant rounded h-9 px-2 text-body-sm truncate">
                         {% for produit in produits %}
                         <option value="{{ produit.id }}">{{ produit.name }}</option>
                         {% endfor %}
@@ -105,12 +113,12 @@
 
                 {% if preview_message %}
                 <div class="bg-surface border border-outline-variant rounded p-4 shadow-sm relative">
-                    <div class="font-body-md text-body-md text-on-surface whitespace-pre-line leading-relaxed">{{ preview_message }}</div>
+                    <div class="font-body-md text-body-md text-on-surface whitespace-pre-line break-words leading-relaxed">{{ preview_message }}</div>
                 </div>
                 <div class="text-center mt-2">
                     <span class="font-body-sm text-body-sm text-secondary flex items-center justify-center gap-1">
-                        <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
-                        Généré via {{ preview_provider }}
+                        <span class="material-symbols-outlined text-[14px] flex-shrink-0">auto_awesome</span>
+                        <span class="truncate">Généré via {{ preview_provider }}</span>
                     </span>
                 </div>
                 {% else %}
@@ -118,6 +126,39 @@
                 {% endif %}
             </div>
         </section>
+    </div>
+</div>
+
+<!-- Historique des campagnes -->
+<div class="reveal-on-scroll mt-gutter bg-surface-container-lowest border border-outline-variant rounded p-container-padding">
+    <h3 class="font-label-bold text-label-bold text-secondary uppercase tracking-wider mb-stack-md">Historique des campagnes</h3>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[500px]">
+            <thead>
+                <tr class="border-b border-outline-variant">
+                    <th class="py-2 px-2 font-label-bold text-label-bold text-secondary uppercase">Nom</th>
+                    <th class="py-2 px-2 font-label-bold text-label-bold text-secondary uppercase">Canal</th>
+                    <th class="py-2 px-2 font-label-bold text-label-bold text-secondary uppercase">Statut</th>
+                    <th class="py-2 px-2 font-label-bold text-label-bold text-secondary uppercase text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant">
+                {% for c in historique_campagnes %}
+                <tr class="hover:bg-surface-container-low transition-colors h-[44px]">
+                    <td class="px-2 py-2 font-mono-data text-mono-data truncate max-w-[220px]" title="{{ c.name }}">{{ c.name }}</td>
+                    <td class="px-2 py-2 text-secondary uppercase text-[12px]">{{ c.channel }}</td>
+                    <td class="px-2 py-2">
+                        <span class="text-[11px] px-2 py-0.5 rounded whitespace-nowrap {% if c.status == 'completed' %}bg-tertiary-container/20 text-tertiary{% else %}bg-outline-variant/30 text-secondary{% endif %}">{{ c.status }}</span>
+                    </td>
+                    <td class="px-2 py-2 text-right">
+                        <a href="{{ url_for('web.delete_campaign', campaign_id=c.id) }}" onclick="return confirm('Supprimer cette campagne ?')" class="text-error hover:underline text-[12px] whitespace-nowrap">Supprimer</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" class="py-4 text-center text-secondary">Aucune campagne pour le moment.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

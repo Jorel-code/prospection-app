@@ -1,4 +1,5 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
+from flask_smorest import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.container import get_prospect_service
 

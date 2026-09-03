@@ -8,13 +8,13 @@ from app.integrations.scrapers.bs4_scraper import BS4Scraper
 from app.integrations.scrapers.overpass_scraper import OverpassScraper
 from app.integrations.scrapers.fallback_scraper import FallbackScraper
 
-
 from app.services.scraping_service import ScrapingService
 from app.integrations.ai_providers.groq_provider import GroqProvider
 from app.integrations.ai_providers.gemini_provider import GeminiProvider
 from app.integrations.ai_providers.fallback_ai_client import FallbackAIClient
 from app.services.ai_generation_service import AIGenerationService
 from app.integrations.channels.email_sender import EmailSender
+from app.integrations.channels.whatsapp_sender import WhatsAppSender
 from app.services.campaign_service import CampaignService
 from app.services.rate_limiter import RateLimiter
 from app.services.auth_service import AuthService
@@ -25,7 +25,8 @@ contact_validator = ContactValidator()
 product_repository = SQLAlchemyProductRepository()
 scraper_engine = FallbackScraper(scrapers=[OverpassScraper(), BS4Scraper()])
 ai_provider = FallbackAIClient(providers=[GroqProvider(), GeminiProvider()])
-channel_sender = EmailSender()
+email_sender = EmailSender()
+whatsapp_sender = WhatsAppSender()
 rate_limiter = RateLimiter(max_appels=10, periode_secondes=60)
 
 def get_prospect_service():
@@ -52,15 +53,15 @@ def get_ai_generation_service():
     )
 
 def get_campaign_service(channel="email"):
-    # NOTE: WhatsApp pas encore branché (en attente du compte Meta) — le paramètre
-    # channel est accepté dès maintenant pour la compatibilité des routes, mais
-    # seul EmailSender est utilisé tant que WhatsAppSender n'est pas ajouté.
     return CampaignService(
-        channel_sender=channel_sender,
+        channel_sender=get_channel_sender(channel),
         ai_generation_service=get_ai_generation_service(),
         prospect_repository=prospect_repository,
         rate_limiter=rate_limiter
     )
+
+def get_channel_sender(channel):
+    return whatsapp_sender if channel == "whatsapp" else email_sender
 
 def get_auth_service():
     return AuthService()

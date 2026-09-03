@@ -64,6 +64,7 @@
                     <td class="px-4 py-2 font-mono-data text-mono-data text-secondary">{{ p.email or "—" }}</td>
                     <td class="px-4 py-2 text-secondary text-[12px] uppercase">{{ p.source }}</td>
                     <td class="px-4 py-2 text-secondary truncate max-w-[200px]" title="{{ p.notes or '' }}">{{ p.notes or "—" }}</td>
+                    <td class="px-4 py-2 text-right"><a href="{{ url_for('web.delete_prospect', prospect_id=p.id) }}" onclick="return confirm('Supprimer ce prospect ?')" class="text-error hover:underline text-[12px]">Supprimer</a></td>
                 </tr>
                 {% else %}
                 <tr><td colspan="6" class="px-4 py-8 text-center text-secondary">Aucun prospect pour le moment. Ajoutez-en un ou lancez un scraping.</td></tr>
